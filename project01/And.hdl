@@ -13,5 +13,7 @@ CHIP And {
     OUT out;
 
     PARTS:
-    // Implementation missing.
+    // Implementation missing
+	Nand(a=a,b=b,out=nout);
+	Not(in=nout, out=out);
 }
