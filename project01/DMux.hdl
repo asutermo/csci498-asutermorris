@@ -14,5 +14,8 @@ CHIP DMux {
 
     PARTS:
     // Implementation missing.
+	Not(in=sel, out=notsel);
+	And(a=in, b=notsel, out=a);
+	And(a=in, b=sel, out=b);
 }
 
