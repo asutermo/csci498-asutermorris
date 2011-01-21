@@ -13,7 +13,6 @@ CHIP Or {
     OUT out;
 
     PARTS:
-    // Implementation missing.
 	Not(in=a, out=anot);
 	Not(in=b, out=bnot);
 	Nand(a=anot, b=bnot, out=out);

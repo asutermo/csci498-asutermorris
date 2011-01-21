@@ -17,5 +17,7 @@ CHIP Mux4Way16 {
     OUT out[16];
 
     PARTS:
-    // Implementation missing.
+    Mux16(a=a, b=b, sel=sel[0], out=on);
+	Mux16(a=c, b=d, sel=sel[0], out=tw);
+	Mux16(a=on, b=tw, sel=sel[1], out=out);
 }
