@@ -41,5 +41,28 @@ CHIP ALU {
         ng; // 1 if out<0, 0 otherwise
 
     PARTS:
-    // Implementation missing.
+	//From the book:
+	//if zx, then x = 0
+	//if nx, then x = !x
+	//if zy, then y = 0
+	//if ny, then y = !y
+	//if f, then x + y else x and y
+	//if no, then out = !out
+	//if out=0, then zr = 1, else zr =0
+	//if out < 0, then ng = 1, else ng =0
+    Mux16(a=x,b=false,sel=zx,out=xzero);	//x = 0
+    Not16(in=xzero,out=notxzero);			//x=!x
+    Mux16(a=xzero,b=notxzero,sel=nx,out=xone); //switch betwen x and !x
+	Mux16(a=y,b=false,sel=zy,out=yzero); //same as above except with y
+    Not16(in=yzero,out=notyzero); //..
+    Mux16(a=yzero,b=notyzero,sel=ny,out=yone); //..
+    And16(a=xone,b=yone,out=and); //if and is selected
+    Add16(a=xone,b=yone,out=add); //if add is selected
+    Mux16(a=and,b=add,sel=f,out=fchoice); //determine which one is added
+    Not16(in=fchoice,out=notfchoice);
+    Mux16(a=fchoice,b=notfchoice,sel=no,out=out,out[0..7]=outzero,out[8..15]=outone,out[15]=ng); //check choice, out = !out, grab portions of out for or
+    Or8Way(in=outzero,out=orzero); 
+    Or8Way(in=outone,out=orone);
+    Or(a=orzero,b=orone,out=or);
+    Not(in=or,out=zr);
 }
