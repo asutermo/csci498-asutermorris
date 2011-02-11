@@ -8,11 +8,13 @@
   D=A
   @R1
   M=D
+  
 (PRE)
   @0
   D=A
   @R2
   M=D
+  
 (LO)
   @R0            
   D=M
