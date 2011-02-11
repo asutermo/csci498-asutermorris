@@ -1,0 +1,30 @@
+(LO)
+	@KBD
+	D=M
+	@DR
+	D;JEQ
+	D=!D
+(DR)
+	@R0
+	M=D
+	@SCREEN
+	D=A
+	@8192
+	D=D+A
+	@R1
+	M=D
+(SCR)
+	@SCREEN
+	D=D-A
+	@LO
+	D;JEQ
+	@R0
+	D=M
+	@R1
+	M=M-1
+	A=M
+	M=D
+	@R1
+	D=M
+	@SCR
+	0;JMP
