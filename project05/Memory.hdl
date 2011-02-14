@@ -28,5 +28,10 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Implementation missing.
+	DMux4Way(in = load, sel = address[13..14], a = loada, b = loadb, c=loadc, d=loadd);
+	RAM16K(in = in, out = out1, load = loada, address = address[0..13]);
+	RAM16K(in = in, out = out2, load = loadb, address = address[0..13]);
+	RAM16K(in = in, out = out3, load = loadc, address = address[0..13]);
+	RAM16K(in = in, out = out4, load = loadd, address = address[0..13]);
+	Mux4Way16(sel = address[13..14], out = out, a = out1, b = out2, c = out3, d = out4);
 }
