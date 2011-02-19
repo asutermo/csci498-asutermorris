@@ -16,7 +16,7 @@
  * to write a value to M, the value is placed in outM, the address 
  * of the target location is placed in the addressM output, and the 
  * writeM control bit is asserted. (When writeM=0, any value may 
- * appear in outM). The outM and writeM outputs are combinational: 
+ * appear in outM). The outM and writeM outputs are combA_intional: 
  * they are affected instantaneously by the execution of the current 
  * instruction. The addressM and pc outputs are clocked: although they 
  * are affected by the execution of the current instruction, they commit 
@@ -39,6 +39,24 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Implementation missing.
+	Mux16(a=instruction,b=ALUout,sel=instruction[15],out=Ain);
+    Not(in=instruction[15],out=notI15);
+    Or(a=notI15,b=instruction[5],out=regA);
+    ARegister(in=Ain,load=regA,out=outA,out[0..14]=addressM);
+    And(a=instruction[15],b=instruction[4],out=regD);
+    DRegister(in=ALUout,load=regD,out=outD);
+    And(a=instruction[2],b=ng,out=j1);
+    And(a=instruction[1],b=zr,out=j2);
+    And(a=instruction[0],b=ps,out=j3);
+    Or(a=ng,b=zr,out=notps);
+    Not(in=notps,out=ps);
+    Or(a=j1,b=j2,out=j12);
+    Or(a=j12,b=j3,out=jump);
+    And(a=jump,b=instruction[15],out=loadPC);
+    Not(in=loadPC,out=incPC);
+    PC(in=outA,inc=incPC,load=loadPC,reset=reset,out[0..14]=pc);
+    Mux16(a=outA,b=inM,sel=instruction[12],out=y);
+    ALU(x=outD,y=y,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6],out=outM,out=ALUout,zr=zr,ng=ng);
+    And(a=instruction[15],b=instruction[3],out=writeM);
 }
 

@@ -28,12 +28,12 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-	DMux(in = load, sel = address[14], a = loada, b = loadb);
-	Not(in = address[13], out = notA);
-	And(a = loadb, b = notA, out = scrn);
-	RAM16K(in = in, out = out1, load = loada, address = address[0..13]);
-	Screen(in = in, load = scrn, address = address[0..12], out = oScrn);
-	Keyboard(out = kb);
-	Mux16(a = oScrn, b = oScrn, sel = address[13], out = out2);
-	Mux16(a = out1, b = out2, sel = address[14], out = out);
+		DMux(in = load, sel = address[14], a = loada, b = loadb);
+		Not(in = address[13], out = notA);
+		And(a = loadb, b = notA, out = scrn);
+		RAM16K(in = in, out = out1, load = loada, address = address[0..13]);
+		Screen(in = in, load = scrn, address = address[0..12], out = oScrn);
+		Keyboard(out = kb);
+		Mux16(a = oScrn, b = oScrn, sel = address[13], out = out2);
+		Mux16(a = out1, b = out2, sel = address[14], out = out);
 }
