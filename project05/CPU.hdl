@@ -45,13 +45,13 @@ CHIP CPU {
     ARegister(in=Ain,load=regA,out=outA,out[0..14]=addressM);
     And(a=instruction[15],b=instruction[4],out=regD);
     DRegister(in=ALUout,load=regD,out=outD);
-    And(a=instruction[2],b=ng,out=j1);
-    And(a=instruction[1],b=zr,out=j2);
-    And(a=instruction[0],b=ps,out=j3);
+    And(a=instruction[2],b=ng,out=jmp1);
+    And(a=instruction[1],b=zr,out=jmp2);
+    And(a=instruction[0],b=ps,out=jmp3);
     Or(a=ng,b=zr,out=notps);
     Not(in=notps,out=ps);
-    Or(a=j1,b=j2,out=j12);
-    Or(a=j12,b=j3,out=jump);
+    Or(a=jmp1,b=jmp2,out=jmp4);
+    Or(a=jmp4, b=jmp3,out=jump);
     And(a=jump,b=instruction[15],out=loadPC);
     Not(in=loadPC,out=incPC);
     PC(in=outA,inc=incPC,load=loadPC,reset=reset,out[0..14]=pc);
