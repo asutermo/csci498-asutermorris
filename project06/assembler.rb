@@ -1,8 +1,9 @@
 
-#i rewrote this after seeing the example given in class
+#I rewrote this after seeing the example given in class
 #my original code worked well, except for NIL args, so
 #here's the rewritten code.
 
+#initiate main info
 #test to make sure input arguments are valid
 def args_valid?
 	ARGV[0] && File.extname(ARGV[0]) == '.asm' && ARGV.size == 1
@@ -24,4 +25,62 @@ begin
 	end
 rescue Exception => e	#if there's any issue with opening files, generate exception
 	puts "ERROR! You suck!" + e
+end
+
+
+#this class is the parser. It will read an assembly command
+#parse it and provide access to command's components.
+#also removes white space and comments
+class Parser
+	def initalize
+	end
+	
+	def hasMoreCommands
+	end
+	
+	def advance
+	end
+	
+	def commandType
+	end
+	
+	def symbol
+	end
+	
+	def dest
+	end
+
+	def comp
+	end
+	
+	def jump
+	end
+end
+
+#this class translates Hack mnemonics into binary
+class Code
+	def dest
+	end
+	
+	def comp
+	end
+	
+	def jump
+	end
+
+end
+
+#This turns symbols into actual addresses
+class SymbolTable
+	def initialize
+	end
+	
+	def addEntry 
+	end
+	
+	def contains
+	end
+	
+	def getAddress
+	end
 end
