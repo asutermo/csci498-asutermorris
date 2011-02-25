@@ -18,8 +18,29 @@ class Parser
 		@A_COMMAND = A_COMMAND			#for A-Commands
 		@L_COMMAND = L_COMMAND			#for L-Commands
 		@C_COMMAND = C_COMMAND			#for C-Commands
-		@CMD = ''						#this is our current command
-		@in = File.open(ARGV[0], 'r')	#open the input stream
+		cmd = ''						#this is our current command
+		infile = File.open(ARGV[0], 'r')	#open the input stream
+		filestring = infile.read()
+		com = filestring.split('\n')
+		commands = []
+		for cm in com
+			if (cm != '')
+				filestring = removeWhiteSpace(cm)
+				if (filestring[1] != '/')
+					commands.append(filestring)
+				end
+			end
+		end
+		
+	end
+	
+	#make it easy to remove white space
+	def removeWhiteSpace(command)
+		str = ''
+		for rem in command.split(' ')
+			str = str + rem
+		end
+		return str
 	end
 
 	#checks more more commands in input
@@ -42,11 +63,11 @@ class Parser
 	#return type of current command. A_Command for @Xxx
 	#C_Command for dest=comp;jump. L-Command for Xxx
 	def commandType
-		if (cmd[0,1].eql?('@')) 
+		if (cmd[0].eql?('@')) 
 			return A_COMMAND
-		elsif (cmd[0,1].eql?('('))
+		elsif (cmd[0].eql?('('))
 			return L_COMMAND
-		else
+		elseif (cmd[0].eql?('A') || cmd[0].eql?('M') || cmd[0].eql?('D') || cmd[0].eql?('0'))
 			return C_COMMAND
 		end
 	end
@@ -89,21 +110,48 @@ class Code
 
 end
 
+#predefined symbol table
+symbols={
+	"SP"=>0,
+	"LCL"=>1,
+	"ARG"=>2,
+	"THIS"=>3,
+	"THAT"=>4,
+	"R0"=>0,
+	"R1"=>1,
+	"R2"=>2,
+	"R3"=>3,
+	"R4"=>4,
+	"R5"=>5,
+	"R6"=>6,
+	"R7"=>7,
+	"R8"=>8,
+	"R9"=>9,
+	"R10"=>10,
+	"R11"=>11,
+	"R12"=>12,
+	"R13"=>13,
+	"R14"=>14,
+	"R15"=>15,
+	"SCREEN"=>16384,
+	"KBD"=>24576
+	}
+	
 #This turns symbols into actual addresses
-class SymbolTable
-	#create new empty symbol table
-	def initialize
-	end
-	#add pair symbol, address to table
-	def addEntry(symbol, address)
-	end
-	#does symbol table contain the symbol
-	def contains(symbol)
-	end
-	#return address associated with symbol
-	def getAddress(symbol)
-	end
-end
+# class SymbolTable
+	# #create new empty symbol table
+	# def initialize
+	# end
+	# #add pair symbol, address to table
+	# def addEntry(symbol, address)
+	# end
+	# #does symbol table contain the symbol
+	# def contains(symbol)
+	# end
+	# #return address associated with symbol
+	# def getAddress(symbol)
+	# end
+# end
 
 #do what's essentially a try-catch clause to open file
 begin
