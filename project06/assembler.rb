@@ -75,15 +75,16 @@ class Parser
 end
 
 
-#do what's essential a try-catch clause
+#do what's essentially a try-catch clause to open file
 begin
 	p "Moving along"
 	a_file=ARGV[0]	#get the file name from arguments
 	a_base = File.basename(a_file, '.asm')	#get the base (extensionless) file name
 	a_path = File.split(a_file)[0]	#get file path
-	h_file = "#{a_path}/#{a_base}.hack"	#generate a hack file
-	parse = Parser.new(ARGV[0])
-	p "Still here"
+	h_file = "#{a_path}/#{a_base}.mine.hack"	#generate a hack file
+	parse = Parser.new(ARGV[0]) #send file for parsing
+	oFile = File.open(h_file, 'w') #open file for writing
+	p "Still here"	
 rescue Exception => e	#if there's any issue with opening files, generate exception
 	puts "ERROR! You suck!" + e
 end
