@@ -55,6 +55,11 @@ class Parser
 
 	#returns symbol or decimal Xxx of current command
 	def symbol
+		if (cmd[0,1].eql('@'))
+			return cmd.gsub('@', '')
+		elsif (cmd[0,1].eql('('))
+			return cmd.delete "(",")"
+		end
 	end
 
 	#return dest mnemonic in C-command
