@@ -23,7 +23,8 @@ class Parser
 		@A_COMMAND = A_COMMAND
 		@L_COMMAND = L_COMMAND
 		@C_COMMAND = C_COMMAND
-		File.open(@filei, 'r')
+		@CMD = ''
+		@in = File.open(@filei, 'r')
 	end
 
 	#checks more more commands in input
@@ -37,14 +38,15 @@ class Parser
 	#reads next command from input, makes it current command
 	#only called if hasMoreCommands() is true
 	def advance
+		@cmd = @in.readline
 	end
 
 	#return type of current command. A_Command for @Xxx
 	#C_Command for dest=comp;jump. L-Command for Xxx
 	def commandType
-		if (CommandType.eql?('@')) 
+		if (cmd[0,1].eql?('@')) 
 			return A_COMMAND
-		elsif (CommandType.eql?('('))
+		elsif (cmd[0,1].eql?('('))
 			return L_COMMAND
 		else
 			return C_COMMAND
