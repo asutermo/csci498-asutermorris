@@ -33,11 +33,15 @@ end
 #also removes white space and comments
 class Parser
 	#open input file/stream, get ready to parse it
-	def initalize
+	def initalize(filei)
 	end
 	
 	#checks more more commands in input
 	def hasMoreCommands
+	#if blah 
+		#return true;
+	#else
+		#return false;
 	end
 	
 	#reads next command from input, makes it current command
@@ -69,13 +73,13 @@ end
 #this class translates Hack mnemonics into binary
 class Code
 	#return binary code of dest
-	def dest
+	def dest(mnemonic)
 	end
 	#return binary code of comp
-	def comp
+	def comp(mnemonic)
 	end
 	#return binary code of jump
-	def jump
+	def jump(mnemonic)
 	end
 
 end
@@ -83,15 +87,15 @@ end
 #This turns symbols into actual addresses
 class SymbolTable
 	#create new empty symbol table
-	def initialize
+	def constructor
 	end
 	#add pair symbol, address to table
-	def addEntry 
+	def addEntry(symbol, address)
 	end
 	#does symbol table contain the symbol
-	def contains
+	def contains(symbol)
 	end
 	#return address associated with symbol
-	def getAddress
+	def getAddress(symbol)
 	end
 end
