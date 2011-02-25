@@ -20,6 +20,9 @@ class Parser
 	#open input file/stream, get ready to parse it
 	def initalize(filei)
 		@filei = filei
+		@A_COMMAND = A_COMMAND
+		@L_COMMAND = L_COMMAND
+		@C_COMMAND = C_COMMAND
 		File.open(@filei, 'r')
 	end
 
@@ -39,6 +42,13 @@ class Parser
 	#return type of current command. A_Command for @Xxx
 	#C_Command for dest=comp;jump. L-Command for Xxx
 	def commandType
+		if (CommandType.eql?('@')) 
+			return A_COMMAND
+		elsif (CommandType.eql?('('))
+			return L_COMMAND
+		else
+			return C_COMMAND
+		end
 	end
 
 	#returns symbol or decimal Xxx of current command
