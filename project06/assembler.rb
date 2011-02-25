@@ -3,7 +3,7 @@ def args_valid?
 	ARGV[0] && File.extname(ARGV[0]) == '.asm' && ARGV.size == 1 && File.exist?(ARGV[0])
 end
 unless args_valid?
-	p "Invalid argument"
+	p "Invalid argument. File either does not have .asm extension, is an invalid input or does not exist"
 	Process.exit #if args are invalid we quit
 end
 
@@ -24,6 +24,7 @@ class Parser
 
 	#checks more more commands in input
 	def hasMoreCommands
+		i = 0
 	#if blah 
 		#return true;
 	#else
@@ -110,8 +111,9 @@ begin
 	a_file=ARGV[0]								#get the file name from arguments
 	a_base = File.basename(a_file, '.asm')		#get the base (extensionless) file name
 	a_path = File.split(a_file)[0]				#get file path
-	p a_base
+	p File.path(a_file)
 	h_file = "#{a_path}/#{a_base}.mine.hack"	#generate a hack file
+	p File.path(h_file)
 	parse = Parser.new(ARGV[0]) 				#send input file for parsing
 	code = Code.new(ARGV[0])					#send output file for output
 	p "Still here"	
