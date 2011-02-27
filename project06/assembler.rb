@@ -1,4 +1,4 @@
-
+#!/usr/bin/env ruby
 #make sure file is good
 def args_valid?
 	ARGV[0] && File.extname(ARGV[0]) == '.asm' && ARGV.size == 1 && File.exist?(ARGV[0])
@@ -7,24 +7,8 @@ unless args_valid?
 	p "Invalid argument. File either does not have .asm extension, is an invalid input or does not exist"
 	Process.exit #if args are invalid we quit
 end
-
-#initial tables and other values
-hashTable = {}
-ramstart = 16
-comp = {'0'=> '0101010', '1'=> '0111111', '-1'=> '0111010', 'D'=> '0001100',
-'A'=> '0110000', '!D'=> '0001101', '!A'=> '0110001', '-D'=> '0001111',
-'-A'=> '0110011', 'D+1'=> '0011111', 'A+1'=> '0110111', 'D-1'=> '0001110',
-'A-1'=> '0110010', 'D+A'=> '0000010', 'D-A'=> '0010011', 'A-D'=> '0000111',
-'D&A'=> '0000000', 'D|A'=> '0010101', 'M'=> '1110000', '!M'=> '1110001', 
-'-M'=> '1110011', 'M+1'=> '1110111',
-'M-1'=> '1110010', 'D+M'=> '1000010', 'D-M'=> '1010011', 'M-D'=> '1000111',
-'D&M'=> '1000000', 'D|M'=> '1010101'}
-
-dest = {'M'=> '001', 'D'=> '010', 'MD'=> '011', 'A'=> '100', 
-'AM'=> '101', 'AD'=> '110', 'AMD'=> '111'}
-#predefined symbol table
-symbols={
-	"SP"=>0,
+#initial tables and other values. hash table is for symbols (will add more ) 
+hashTable = {"SP"=>0,
 	"LCL"=>1,
 	"ARG"=>2,
 	"THIS"=>3,
@@ -46,8 +30,20 @@ symbols={
 	"R14"=>14,
 	"R15"=>15,
 	"SCREEN"=>16384,
-	"KBD"=>24576
-}
+	"KBD"=>24576}
+#ram start helps address
+ramstart = 16
+#following are binary translations
+comp = {'0'=> '0101010', '1'=> '0111111', '-1'=> '0111010', 'D'=> '0001100',
+'A'=> '0110000', '!D'=> '0001101', '!A'=> '0110001', '-D'=> '0001111',
+'-A'=> '0110011', 'D+1'=> '0011111', 'A+1'=> '0110111', 'D-1'=> '0001110',
+'A-1'=> '0110010', 'D+A'=> '0000010', 'D-A'=> '0010011', 'A-D'=> '0000111',
+'D&A'=> '0000000', 'D|A'=> '0010101', 'M'=> '1110000', '!M'=> '1110001', 
+'-M'=> '1110011', 'M+1'=> '1110111',
+'M-1'=> '1110010', 'D+M'=> '1000010', 'D-M'=> '1010011', 'M-D'=> '1000111',
+'D&M'=> '1000000', 'D|M'=> '1010101'}
+dest = {'M'=> '001', 'D'=> '010', 'MD'=> '011', 'A'=> '100', 
+'AM'=> '101', 'AD'=> '110', 'AMD'=> '111'}
 #start parsing
 def Parser(filename)
 	#line counter
