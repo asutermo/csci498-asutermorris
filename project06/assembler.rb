@@ -7,8 +7,10 @@ unless args_valid?
 	p "Invalid argument. File either does not have .asm extension, is an invalid input or does not exist"
 	Process.exit #if args are invalid we quit
 end
+
 #initial tables and other values. hash table is for symbols (will add more ) 
-hashTable = {"SP"=>0,
+$ramstart = 16
+$hashTable = {"SP"=>0,
 	"LCL"=>1,
 	"ARG"=>2,
 	"THIS"=>3,
@@ -31,10 +33,6 @@ hashTable = {"SP"=>0,
 	"R15"=>15,
 	"SCREEN"=>16384,
 	"KBD"=>24576}
-#ram start helps address
-ramstart = 16
-#following are binary translations
-
 
 #start parsing
 def Parser(filename)
@@ -61,7 +59,7 @@ def Parser(filename)
 		commandType = cType(line)	
 		#determine if command is necessary
 		if commandType == 'L_COMMAND'
-			hashTable[line[1..(line.length-1)]] = lineCount
+			$hashTable[line[1..(line.length-1)]] = lineCount
 		else
 			lineCount += 1
 		end
@@ -147,16 +145,22 @@ end
 
 # returns a-instr		
 def aCommand(input)
+
+	puts "acommand"
 	input = input[1..(input.size-1)]
 	if input[0,1].match(/\d/)
 		input = input
-	elsif hashTable.key?(input)
-		input = hashTable[input]
+	elsif $hashTable.key?(input)
+		puts "Testing else"
+		input = $hashTable[input]
 	else
 		#store variable
-		hashTable[input] = ramstart
-		input = ramstart
-		ramstart += 1
+		puts "testing else"
+		puts $ramstart
+		#$hashTable[input] = $ramstart
+		$hashTable.store(input, $ramstart)
+		input = $ramstart
+		$ramstart += 1
 	end
 	num = ((Integer(input)).to_s(2))
 	padding = 16 - num.length
