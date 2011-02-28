@@ -59,7 +59,7 @@ def Parser(filename)
 		commandType = cType(line)	
 		#determine if command is necessary
 		if commandType == 'L_COMMAND'
-			$hashTable[line[1..(line.length-1)]] = lineCount
+			$hashTable[line[1..(line.length-2)]] = lineCount
 		else
 			lineCount += 1
 		end
@@ -120,7 +120,6 @@ def dest(input)
 dest = {'M'=> '001', 'D'=> '010', 'MD'=> '011', 'A'=> '100', 
 'AM'=> '101', 'AD'=> '110', 'AMD'=> '111'}
 	if input.match('=')
-		puts "match"
 		code = input.gsub(/\=.*$/, '')
 		return dest[code]
 	else
@@ -130,13 +129,10 @@ end
 	
 #jump
 def jump(input)
-	puts "begin jump: " + input
 jmp = {'JGT'=> '001', 'JEQ'=> '010', 'JGE'=> '011', 'JLT'=> '100', 
 'JNE'=> '101', 'JLE'=> '110', 'JMP'=> '111'}
 	if input.match(';')
-		puts "match"
 		code = input.gsub(/.*;/, '')
-		puts code
 		return jmp[code]
 	else
 		return '000'
@@ -145,20 +141,22 @@ end
 
 # returns a-instr		
 def aCommand(input)
-
-	puts "acommand"
 	input = input[1..(input.size-1)]
+	input.gsub!(/.*\)$/, '')
+	puts input
 	if input[0,1].match(/\d/)
 		input = input
 	elsif $hashTable.key?(input)
 		puts "Testing else"
 		input = $hashTable[input]
+		puts input
 	else
 		#store variable
 		puts "testing else"
 		puts $ramstart
-		#$hashTable[input] = $ramstart
 		$hashTable.store(input, $ramstart)
+		
+		puts $hashTable
 		input = $ramstart
 		$ramstart += 1
 	end
@@ -170,7 +168,6 @@ end
 
 # returns the c-instruction
 def cCommand(input)
-	puts "c-command: " + input
 	co = input
 	de = input
 	ju = input
