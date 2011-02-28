@@ -75,16 +75,13 @@ def Parser(filename)
 	
 	#while we get lines, skip any comments, new lines
 	while (line = f.gets)
-		puts "parsing line"
 		line = parseLine(line)
 		#check if it blank
 		if line.empty?
-			puts "line empty"
 			next
 		end
 		#get the commnd type 
 		commandType = cType(line)
-		puts "command: " + commandType
 		#unknown? quit
 		if (commandType == 'Error')
 			print "Assembler Error on line : " + line
@@ -117,24 +114,21 @@ comp = {'0'=> '0101010', '1'=> '0111111', '-1'=> '0111010', 'D'=> '0001100',
 'M-1'=> '1110010', 'D+M'=> '1000010', 'D-M'=> '1010011', 'M-D'=> '1000111',
 'D&M'=> '1000000', 'D|M'=> '1010101'}
 	puts "begin comp: " + input
-	if input.match('=')
-		input.gsub!(/\=.*$/, '')
-		puts "end comp: " + input + comp[input]
-		return comp[input]
-	else
-		return '0000000'
-	end
+	
+	code = input.gsub(/(^.*\=)|(;.*%)/, '')
+	puts "end comp: " + comp[code]
+	return comp[code]
 end
 
 #dest
 def dest(input)
-	puts "begin dest"
+	puts "begin dest" + input
 dest = {'M'=> '001', 'D'=> '010', 'MD'=> '011', 'A'=> '100', 
 'AM'=> '101', 'AD'=> '110', 'AMD'=> '111'}
 	if input.match('=')
-		input.gsub!(/\=.*$/, '')
-		puts "end dest" + input
-		return dest[input]
+		puts "match"
+		code = input.gsub(/\=.*$/, '')
+		return dest[code]
 	else
 		return '000'
 	end
@@ -146,9 +140,8 @@ def jump(input)
 jmp = {'JGT'=> '001', 'JEQ'=> '010', 'JGE'=> '011', 'JLT'=> '100', 
 'JNE'=> '101', 'JLE'=> '110', 'JMP'=> '111'}
 	if input.match(';')
-		input.gsub!(/^.*;/, '')
-		puts "end: " + input
-		return jmp[input]
+		code = input.gsub(/^.*;/, '')
+		return jmp[code]
 	else
 		return '000'
 	end
@@ -179,8 +172,7 @@ def cCommand(input)
 	co = input
 	de = input
 	ju = input
-	puts '111' + comp(co) + dest(de) + jump(ju)
-	return '111' + comp(co) + dest(de) + jump(ju)
+	return '111' + comp(co) +  dest(de) +  jump(ju)
 end
 
 #get command type
