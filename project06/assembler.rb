@@ -147,16 +147,11 @@ def aCommand(input)
 	if input[0,1].match(/\d/)
 		input = input
 	elsif $hashTable.key?(input)
-		puts "Testing else"
 		input = $hashTable[input]
 		puts input
 	else
 		#store variable
-		puts "testing else"
-		puts $ramstart
 		$hashTable.store(input, $ramstart)
-		
-		puts $hashTable
 		input = $ramstart
 		$ramstart += 1
 	end
