@@ -2,34 +2,48 @@
 
 #make sure file is good
 def args_valid?
-	(File.extname(ARGV[0]) == '.vm' && ARGV.size == 1 && File.exist?(ARGV[0]) || File.directory?(ARGV[0]))
+	ARGV.size == 1 && File.exist?(ARGV[0]) || Dir.exist?(Dir.pwd + "/" + ARGV[0])
 end
 unless args_valid?
-	p "Invalid argument. File either does not have .asm extension, is an invalid input or does not exist"
+	p "Invalid argument. File or Path either does not have .vm extension, is an invalid input or does not exist"
 	Process.exit #if args are invalid we quit
 end
 
-def parse_filenames(path)
-	if File.directory?(path)
+class Translate
+	def initialize(path)
+		puts "Initalize"
+		path = Dir.pwd + path
+		puts path
+		parse_filenames(path)
+		@files = nil
 	end
-	#dirname=path.chom
+	
+	def parse_filenames(path)
+		puts "parsing " + path
+		if Dir.exist?(path)
+			dirname = path.chomp
+			puts "Directory exists!"
+			files = Dir.glob("*.vm")
+			puts files.length
+			if (files.length == 0)
+				raise  StandardError, "no files to open"
+			end
+		elsif File.file?(path)
+			f = File.open(path, 'r')
+			f_path = File.split(f)[0]
+			f_base = File.basename(f, '.vm')
+		else
+			raise "ERROR, not a file or directory!"
+		end
+		stuff = ""
+		return stuff
+	end
 end
 
 #start parsing
 class Parser
 	#open file stream, and get ready to parse it
-	def initialize(file)
-		#line counter
-		lineCount = 0
-
-		#open our file, get path and base name. this should be a .vm file
-		f = File.open(file, 'r')
-		f_path = File.split(f)[0]
-		f_base = File.basename(f, '.vm')
-
-		#open file to write to, this is a .asm file
-		nFile = "#{f_path}/#{f_base}.asm"
-		newFile = File.open(nFile, "w")
+	def initialize()
 	end
 	
 	#are there more commands in the input
@@ -81,10 +95,9 @@ class CodeWriter
 end
 
 # get file name, attempt run
-file = ARGV[0]
+path = ARGV[0]
 begin
-	parse = Parser.new(file)
-	cw = CodeWriter.new(file)
+	trans = Translate.new(path)
 rescue Exception => e
 	puts "Error you suck!"
 	puts e
