@@ -72,10 +72,8 @@ class Translate
 		@output = ''
 		@files = parse_filenames(path)
 		code = CodeWriter.new(@output)
-		# for file in @files do
-			# process_filenames(file)
-		# end
-		#code.close()
+		puts @files
+		code.close()
 		
 	end
 	
@@ -103,6 +101,7 @@ class Translate
 		else
 			raise "ERROR, not a file or directory!"
 		end
+		return @files
 	end
 		
 	def process_filenames(path)
