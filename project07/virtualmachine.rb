@@ -9,36 +9,32 @@ unless args_valid?
 	Process.exit #if args are invalid we quit
 end
 
-class Translate
-	def initialize(path)
-		puts "Initalize"
-		path = Dir.pwd + path
-		puts path
-		parse_filenames(path)
-		@files = nil
+class CodeWriter
+	#open output file stream, get ready to write to it
+	def initialize(filepath)
+		
 	end
 	
-	def parse_filenames(path)
-		puts "parsing " + path
-		if Dir.exist?(path)
-			dirname = path.chomp
-			puts "Directory exists!"
-			files = Dir.glob("*.vm")
-			puts files.length
-			if (files.length == 0)
-				raise  StandardError, "no files to open"
-			end
-		elsif File.file?(path)
-			f = File.open(path, 'r')
-			f_path = File.split(f)[0]
-			f_base = File.basename(f, '.vm')
-		else
-			raise "ERROR, not a file or directory!"
-		end
-		stuff = ""
-		return stuff
+	
+	
+	#inform code writer that translation of a new VM file is started
+	def setFileName(filename)
+	end
+	
+	#wirte assembly code that is the translation of given arithmetic command
+	def writeArithmetic(command)
+	end
+	
+	#write assemvly code that is translation of given comand, where it is
+	#either push or pop
+	def writePushPop(command, segment, index)
+	end
+	
+	#close output file
+	def close
 	end
 end
+
 
 #start parsing
 class Parser
@@ -71,28 +67,54 @@ class Parser
 	end
 end
 
-class CodeWriter
-	#open output file stream, get ready to write to it
-	def initialize(outputfile)
+class Translate
+	def initialize(path)
+		puts "Initalize"
+		path = Dir.pwd + "/" + path
+		puts path
+		@files = parse_filenames(path)
+		@output = ''
+	
+		#code = CodeWriter.new(output)
+		# for file in @files do
+			# process_filenames(file)
+		# end
+		#code.close()
+		
 	end
 	
-	#inform code writer that translation of a new VM file is started
-	def setFileName(filename)
+	def parse_filenames(path)
+		puts "parsing " + path
+		if Dir.exist?(path)
+			puts path
+			dirname = path.chomp
+			puts "Directory exists! " + dirname
+			@files = Dir.glob("*.vm")
+			puts @files.length
+			if (@files.length == 0)
+				raise  StandardError, "no files to open"
+			end 
+			Dir.chdir(path)
+			name = File.basename(Dir.getwd)
+			@output = File.open(name + ".asm", 'w')
+		elsif File.file?(path)
+			puts path
+			@files = path
+			f_path = File.split(path)[0]
+			f_base = File.basename(path, '.vm')
+			nFile = "#{f_path}/#{f_base}.asm"
+			@output = File.open(nFile, 'w')
+		else
+			raise "ERROR, not a file or directory!"
+		end
+		return @files
 	end
 	
-	#wirte assembly code that is the translation of given arithmetic command
-	def writeArithmetic(command)
-	end
-	
-	#write assemvly code that is translation of given comand, where it is
-	#either push or pop
-	def writePushPop(command, segment, index)
-	end
-	
-	#close output file
-	def close
+	def process_filenames(path)
+		#parse = Parser.new(path)
 	end
 end
+
 
 # get file name, attempt run
 path = ARGV[0]
