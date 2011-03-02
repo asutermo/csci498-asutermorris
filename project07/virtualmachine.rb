@@ -12,7 +12,7 @@ end
 class CodeWriter
 	#open output file stream, get ready to write to it
 	def initialize(filepath)
-		
+		@file = File.open(filepath, 'w')
 	end
 	
 	#inform code writer that translation of a new VM file is started
@@ -37,7 +37,8 @@ end
 #start parsing
 class Parser
 	#open file stream, and get ready to parse it
-	def initialize()
+	def initialize(filename)
+		@file = File.open(filename, 'r')
 	end
 	
 	#are there more commands in the input
@@ -68,10 +69,9 @@ end
 class Translate
 	def initialize(path)
 		path = Dir.pwd + "/" + path
-		@files = parse_filenames(path)
 		@output = ''
-	
-		#code = CodeWriter.new(output)
+		@files = parse_filenames(path)
+		code = CodeWriter.new(@output)
 		# for file in @files do
 			# process_filenames(file)
 		# end
@@ -89,14 +89,14 @@ class Translate
 			end 
 			Dir.chdir(path)
 			name = File.basename(Dir.getwd)
-			@output = File.open(name + ".asm", 'w')
+			@output = name + ".asm"
 		elsif File.file?(path)
 			if (File.extname(path) == '.vm')
 				@files = path
 				f_path = File.split(path)[0]
 				f_base = File.basename(path, '.vm')
 				nFile = "#{f_path}/#{f_base}.asm"
-				@output = File.open(nFile, 'w')
+				@output = nFile
 			else
 				raise "Error, cannot open this file!"
 			end
