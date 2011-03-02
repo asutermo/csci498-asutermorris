@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-require 'rubygems'
 
 #make sure file is good
 def args_valid?
@@ -11,18 +10,20 @@ unless args_valid?
 end
 
 def parse_filenames(path)
-	
+	if File.directory?(path)
+	end
+	#dirname=path.chom
 end
 
 #start parsing
 class Parser
 	#open file stream, and get ready to parse it
-	def initialize(f)
+	def initialize(file)
 		#line counter
 		lineCount = 0
 
 		#open our file, get path and base name. this should be a .vm file
-		f = File.open(filename, 'r')
+		f = File.open(file, 'r')
 		f_path = File.split(f)[0]
 		f_base = File.basename(f, '.vm')
 
@@ -65,7 +66,7 @@ class CodeWriter
 	def setFileName(filename)
 	end
 	
-	#write assembly code that is the translation of given arithmetic command
+	#wirte assembly code that is the translation of given arithmetic command
 	def writeArithmetic(command)
 	end
 	
@@ -75,7 +76,7 @@ class CodeWriter
 	end
 	
 	#close output file
-	def close()
+	def close
 	end
 end
 
