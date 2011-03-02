@@ -15,8 +15,6 @@ class CodeWriter
 		
 	end
 	
-	
-	
 	#inform code writer that translation of a new VM file is started
 	def setFileName(filename)
 	end
@@ -69,9 +67,7 @@ end
 
 class Translate
 	def initialize(path)
-		puts "Initalize"
 		path = Dir.pwd + "/" + path
-		puts path
 		@files = parse_filenames(path)
 		@output = ''
 	
@@ -84,32 +80,31 @@ class Translate
 	end
 	
 	def parse_filenames(path)
-		puts "parsing " + path
 		if Dir.exist?(path)
-			puts path
 			dirname = path.chomp
-			puts "Directory exists! " + dirname
+			Dir.chdir(path)
 			@files = Dir.glob("*.vm")
-			puts @files.length
 			if (@files.length == 0)
-				raise  StandardError, "no files to open"
+				raise  StandardError, "No files to open"
 			end 
 			Dir.chdir(path)
 			name = File.basename(Dir.getwd)
 			@output = File.open(name + ".asm", 'w')
 		elsif File.file?(path)
-			puts path
-			@files = path
-			f_path = File.split(path)[0]
-			f_base = File.basename(path, '.vm')
-			nFile = "#{f_path}/#{f_base}.asm"
-			@output = File.open(nFile, 'w')
+			if (File.extname(path) == '.vm')
+				@files = path
+				f_path = File.split(path)[0]
+				f_base = File.basename(path, '.vm')
+				nFile = "#{f_path}/#{f_base}.asm"
+				@output = File.open(nFile, 'w')
+			else
+				raise "Error, cannot open this file!"
+			end
 		else
 			raise "ERROR, not a file or directory!"
 		end
-		return @files
 	end
-	
+		
 	def process_filenames(path)
 		#parse = Parser.new(path)
 	end
