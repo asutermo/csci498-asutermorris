@@ -9,87 +9,173 @@ unless args_valid?
 	Process.exit #if args are invalid we quit
 end
 
+#globals...so shoot me
+$C_ARITHMETIC = 0
+$C_PUSH = 1
+$C_POP = 2
+$C_LABEL = 3
+$C_GOTO = 4
+$C_IF = 5
+$C_FUNCTION = 6
+$C_RETURN = 7
+$C_CALL = 8 
+
+$ARITHMETIC_COMMANDS = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
+	
+
 class CodeWriter
 	#open output file stream, get ready to write to it
 	def initialize(filepath)
+		#all file checking has been done in Translate, open it
 		@file = File.open(filepath, 'w')
+		@counter = 0
+		@currentName = ""
 	end
 	
 	#inform code writer that translation of a new VM file is started
 	def setFileName(filename)
+		@currentName = filename
 	end
 	
 	#wirte assembly code that is the translation of given arithmetic command
 	def writeArithmetic(command)
+		
 	end
 	
 	#write assemvly code that is translation of given comand, where it is
 	#either push or pop
 	def writePushPop(command, segment, index)
+		
 	end
-	
+
+	 def push()
+        
+	end
+
+    #Pops the stack and puts the value into the D register
+    def pop()
+        
+    end
+
+    def pushFromRAM(index)
+       
+	end
+
+    def preambleLocationInMemory(segmentVar)
+       
+	end
+
+    def preambleLocationIsMemory(memoryLoc)
+        
+	end
+
+    def storeToRAM(index)
+        
+    end
+
+    def greaterThanLessThanJump(jumpCmd)
+        
+	end
+
 	#close output file
 	def close
+		@file.close()
 	end
 end
-
 
 #start parsing
 class Parser
 	#open file stream, and get ready to parse it
 	def initialize(filename)
+		#all file checking has been done in Translate, open it
 		@file = File.open(filename, 'r')
+		@commands = []
+		@counter = 0
+		while (@lines = @file.gets)
+			@current = @lines
+			@stripped = @lines.strip
+			if (@lines.empty?)
+				next
+			end
+			if !(/\/\//.match(@stripped) or @stripped.length == 0)
+				@commands << @stripped
+			else
+				next
+			end
+		end
+		@counter = -1
+		puts @commands
 	end
-	
-	#are there more commands in the input
-	def hasMoreCommands
+
+	def current()
 	end
-	
-	#reads next command from input, makes it current command, only called
-	#if hasMoreCommands is true. initially there is no current commands
-	def advance
+
+    def hasMoreCommands()
 	end
-	
-	#returns type of the current vm command. C_arithmetic is returned
-	#for all arithemetic commands
-	def commandType
+
+    def advance()
+    end
+
+    def commandType()
+        
 	end
-	
-	#returns first argument of current command. shouldnt be called if current command
-	#is c_return
-	def arg1
+
+
+    def arg1()
+        
+    end  
+       
+    def arg2
+       
 	end
-	
-	#returns second argument of current command. only calld if current command
-	#is push, pop, function or call
-	def arg2
+
+	def close
+		@file.close()
 	end
 end
 
 class Translate
 	def initialize(path)
+		#modify path, make instance vars
 		path = Dir.pwd + "/" + path
 		@output = ''
-		@files = parse_filenames(path)
-		code = CodeWriter.new(@output)
-		puts @files
-		code.close()
 		
+		#parse the file
+		@files = parse_filenames(path)
+		
+		#generate a code writer
+		@code = CodeWriter.new(@output)
+		
+		#begin the processing
+		@files.each { |file| process_filenames(file) }
+		
+		#close the code writer
+		@code.close()
 	end
 	
+	#this actually does the file/dir checking
 	def parse_filenames(path)
+		#first if checks if it's a directory, a file or neither
 		if Dir.exist?(path)
 			dirname = path.chomp
+			
+			#change our directory to the path, grab only .vm files
 			Dir.chdir(path)
 			@files = Dir.glob("*.vm")
+			
+			#if we have no files, there's nothing we can do, EXCEPTION
 			if (@files.length == 0)
 				raise  StandardError, "No files to open"
 			end 
+			
+			#generate our output path
 			Dir.chdir(path)
 			name = File.basename(Dir.getwd)
 			@output = name + ".asm"
 		elsif File.file?(path)
+			#make sure the file is of the .vm type
 			if (File.extname(path) == '.vm')
+				#generate our output path
 				@files = path
 				f_path = File.split(path)[0]
 				f_base = File.basename(path, '.vm')
@@ -101,12 +187,29 @@ class Translate
 		else
 			raise "ERROR, not a file or directory!"
 		end
+		
+		#return everything
 		return @files
 	end
 		
 	def process_filenames(path)
-		#parse = Parser.new(path)
+		puts "generating parser, setting code file name"
+		parser = Parser.new(path)
+		@code.setFileName(path)
+		while parser.hasMoreCommands
+			parser.advance
+			if parser.commandType == $C_ARITHMETIC
+				@code.writeArithmetic(parser.arg1())
+			elsif parser.commandType == $C_PUSH || parser.commandType == $C_POP
+				@code.writePushPop(parser.commandType, parser.arg1(), parser.arg2())
+			else 
+				raise "Command error"
+			end
+		end
+		
+		parser.close()
 	end
+
 end
 
 
