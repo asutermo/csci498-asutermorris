@@ -32,12 +32,12 @@ class CodeWriter
 		@currentName = ""
 	end
 	
-	#inform code writer that translation of a new VM file is started
+	#set file name 
 	def setFileName(filename)
 		@currentName = filename
 	end
 	
-	#wirte assembly code that is the translation of given arithmetic command
+	#provide the arithmetic translation of the code
 	def writeArithmetic(command)
 		if command == "add"
             pop()
@@ -74,7 +74,7 @@ class CodeWriter
             pop()
             @file.write("@SP\n")
             @file.write("A=M-1\n")
-            @file.write("D=M-D\n") #or D-M, doesn't matter
+            @file.write("D=M-D\n")
             @file.write("@" + label + "\n")
             @file.write("D;JEQ\n")
             @file.write("D=1\n")
@@ -89,8 +89,7 @@ class CodeWriter
 		end
 	end
 	
-	#write assemvly code that is translation of given comand, where it is
-	#either push or pop
+	#write push or pop assembly code
 	def writePushPop(command, segment, index)
 		segment.rstrip!
 		if command == $C_PUSH
@@ -152,7 +151,8 @@ class CodeWriter
 		end
 	end
 
-	 def push()
+	#push the stack
+	def push()
         @file.write("@SP\n")
         @file.write("A=M\n")
         @file.write("M=D\n")
@@ -160,7 +160,7 @@ class CodeWriter
         @file.write("M=M+1\n")
 	end
 
-    #Pops the stack and puts the value into the D register
+    #pop the stack
     def pop()
         @file.write("@SP\n")
         @file.write("M=M-1\n")
@@ -168,6 +168,7 @@ class CodeWriter
         @file.write("D=M\n")
     end
 
+	#push from ram
     def pushFromRAM(index)
         @file.write("@" + index + "\n")
         @file.write("A=D+A\n")
@@ -185,6 +186,7 @@ class CodeWriter
         @file.write("D=A\n")
 	end
 
+	#store 
     def storeToRAM(index)
         @file.write("@13\n") 
         @file.write("M=D\n")
@@ -250,22 +252,25 @@ class Parser
 			end
 		end
 		@counter = -1
-		puts @commands
 	end
-
+	
+	#current command
 	def current()
         return @commands[@counter]
 	end
 
+	#return if there are more commands
     def hasMoreCommands()
        return @counter + 1 < @commands.length
 	end
 
+	#advance lines
     def advance()
         @counter += 1
         return @commands[@counter]
     end
 
+	#return command type
     def commandType()
         for command in $ARITHMETIC_COMMANDS
             if command == current()
@@ -279,10 +284,10 @@ class Parser
 		end
 	end
 
-
+	#return argument 1
     def arg1()
         if commandType() == $C_RETURN
-            raise TypeError("Trying to get the first argument on a return command")
+            raise StandardError("Bad first argument")
 		end
         if commandType() == $C_ARITHMETIC
             result=/\w+/.match(current())
@@ -292,23 +297,22 @@ class Parser
 			result = result.gsub(/\d/, '')
 			result.strip
 			result.chomp
-			puts "res1: " + result
             return result
 		end
     end  
        
+	#return argument two
     def arg2
         type = commandType()
-		puts type
         if type != $C_PUSH and type != $C_POP and type != $C_FUNCTION and type != $C_CALL
-           raise TypeError("Cannot get the second argument for this command")
+           raise StandardError("Bad second argument")
 		end
 		result = current.gsub(/\D+/, '')
-		puts "res2: " + result
 		result.chomp
         return result
 	end
 
+	#self explanatory
 	def close
 		@file.close()
 	end
@@ -371,11 +375,14 @@ class Translate
 		#return everything
 		return @files
 	end
-		
+			
+	#start processing
 	def process_filenames(path)
-		puts "generating parser, setting code file name"
+		#objects
 		parser = Parser.new(path)
 		@code.setFileName(path)
+
+		#while we have more commands, advance and check command types
 		while parser.hasMoreCommands
 			parser.advance
 			if parser.commandType == $C_ARITHMETIC
@@ -387,11 +394,10 @@ class Translate
 			end
 		end
 		
+		#close object
 		parser.close()
 	end
-
 end
-
 
 # get file name, attempt run
 path = ARGV[0]
