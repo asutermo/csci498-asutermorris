@@ -39,35 +39,188 @@ class CodeWriter
 	
 	#wirte assembly code that is the translation of given arithmetic command
 	def writeArithmetic(command)
-
+		if command == "add"
+            pop()
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("M=M+D\n")
+        elsif command == "sub"
+            pop()
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("M=M-D\n") 
+        elsif command == "neg"
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("M=-M\n")
+        elsif command == "and"
+            pop()
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("M=M & D\n")
+        elsif command == "or"
+            pop()
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("M=M | D\n")
+        elsif command == "not"
+            pop()
+            @file.write("@SP\n")
+            @file.write("A=M\n")
+            @file.write("M=!D")
+        elsif command == "eq"
+            label = "negate" + @counter.to_s
+			@counter += 1
+            pop()
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("D=M-D\n") #or D-M, doesn't matter
+            @file.write("@" + label + "\n")
+            @file.write("D;JEQ\n")
+            @file.write("D=1\n")
+            @file.write("(" + label + ")\n")
+            @file.write("@SP\n")
+            @file.write("A=M-1\n")
+            @file.write("M=!D\n")
+        elsif command == "lt"
+            greaterThanLessThanJump("JLT")
+        elsif command == "gt"
+            greaterThanLessThanJump("JGT")
+		end
 	end
 	
 	#write assemvly code that is translation of given comand, where it is
 	#either push or pop
 	def writePushPop(command, segment, index)
-		
+		segment.rstrip!
+		if command == $C_PUSH
+            if segment == "constant" 
+                @file.write("@" + index.to_s + "\n")
+                @file.write("D=A\n")
+                push()
+            elsif segment == "argument"
+                preambleLocationInMemory("ARG")
+                pushFromRAM(index)
+            elsif segment == "local"
+                preambleLocationInMemory("LCL")
+                pushFromRAM(index)
+            elsif segment == "this"
+                preambleLocationInMemory("THIS")
+                pushFromRAM(index)
+            elsif segment == "that"
+                preambleLocationInMemory("THAT")
+                pushFromRAM(index)
+            elsif segment == "temp"
+                preambleLocationIsMemory("5")
+                pushFromRAM(index)
+            elsif segment == "pointer"
+                preambleLocationIsMemory("3")
+                pushFromRAM(index)
+            elsif segment == "static"
+                @file.write("@" + @currentName + "." + index.to_s + "\n")
+                @file.write("D=M\n")
+                push()
+            else
+                print("ERROR: segment undefined, segment given - " + segment)
+			end
+        elsif command == $C_POP
+            if segment == "argument"
+                preambleLocationInMemory("ARG")
+                storeToRAM(index)
+            elsif segment == "local"
+                preambleLocationInMemory("LCL")
+                storeToRAM(index)
+            elsif segment == "this"
+                preambleLocationInMemory("THIS")
+                storeToRAM(index)
+            elsif segment == "that"
+                preambleLocationInMemory("THAT")
+                storeToRAM(index)
+            elsif segment == "temp"
+                preambleLocationIsMemory("5")
+                storeToRAM(index)
+            elsif segment == "pointer"
+                preambleLocationIsMemory("3")
+                storeToRAM(index)
+            elsif segment == "static"
+                pop()
+                @file.write("@" + @currentName + "." + index.to_s + "\n")
+                @file.write("M=D\n")
+            else
+                print("ERROR: segment undefined, segment given - " + segment)
+			end
+		end
 	end
 
 	 def push()
+        @file.write("@SP\n")
+        @file.write("A=M\n")
+        @file.write("M=D\n")
+        @file.write("@SP\n")
+        @file.write("M=M+1\n")
 	end
 
     #Pops the stack and puts the value into the D register
     def pop()
+        @file.write("@SP\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
     end
 
     def pushFromRAM(index)
+        @file.write("@" + index + "\n")
+        @file.write("A=D+A\n")
+        @file.write("D=M\n")
+        push()
 	end
 
     def preambleLocationInMemory(segmentVar)
+        @file.write("@" + segmentVar + "\n")
+        @file.write("D=M\n")
 	end
 
     def preambleLocationIsMemory(memoryLoc)
+        @file.write("@" + memoryLoc.to_s + "\n")
+        @file.write("D=A\n")
 	end
 
     def storeToRAM(index)
+        @file.write("@13\n") 
+        @file.write("M=D\n")
+        @file.write("@" + index + "\n")
+        @file.write("D=A\n")
+        @file.write("@13\n")
+        @file.write("M=M+D\n")
+        @file.write("@SP\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@13\n")
+        @file.write("A=M\n")
+        @file.write("M=D\n")
     end
 
     def greaterThanLessThanJump(jumpCmd)
+        negateLbl = "negate" + @counter.to_s
+        setTrueLbl = "setTrue" + @counter.to_s
+        @counter += 1
+        pop()
+        @file.write("@SP\n")
+        @file.write("A=M-1\n")
+        @file.write("D=M-D\n")
+        @file.write("@" + setTrueLbl + "\n")
+        @file.write("D;" + jumpCmd + "\n")
+        @file.write("D=0\n")
+        @file.write("D=!D\n")
+        @file.write("@" + negateLbl + "\n")
+        @file.write("0;JMP\n")
+        @file.write("(" + setTrueLbl + ")\n")
+        @file.write("D=0\n")
+        @file.write("(" + negateLbl + ")\n")
+        @file.write("@SP\n")
+        @file.write("A=M-1\n")
+        @file.write("M=!D\n")
 	end
 
 	#close output file
