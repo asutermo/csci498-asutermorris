@@ -1,11 +1,11 @@
-@7
+@R7
 D=A
 @SP
 A=M
 M=D
 @SP
 M=M+1
-@8
+@R8
 D=A
 @SP
 A=M

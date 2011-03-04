@@ -22,7 +22,6 @@ $C_CALL = 8
 
 $ARITHMETIC_COMMANDS = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
 	
-
 class CodeWriter
 	#open output file stream, get ready to write to it
 	def initialize(filepath)
