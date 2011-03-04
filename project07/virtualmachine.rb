@@ -339,22 +339,17 @@ class Translate
 	#this actually does the file/dir checking
 	def parse_filenames(path)
 		#first if checks if it's a directory, a file or neither
-		if Dir.exist?(path)
+		if File.directory?(path)
 			dirname = path.chomp
-			
-			#change our directory to the path, grab only .vm files
-			Dir.chdir(path)
-			@files = Dir.glob("*.vm")
-			
+			@files = File.join(path, "*.vm")
+			@files = Dir.glob(@files)
 			#if we have no files, there's nothing we can do, EXCEPTION
 			if (@files.length == 0)
 				raise  StandardError, "No files to open"
 			end 
 			
-			#generate our output path
-			Dir.chdir(path)
-			name = File.basename(Dir.getwd)
-			@output = name + ".asm"
+			name = File.basename(dirname)
+			@output = dirname + "/" + name + ".asm"
 		elsif File.file?(path)
 			#make sure the file is of the .vm type
 			if (File.extname(path) == '.vm')
