@@ -39,7 +39,7 @@ class CodeWriter
 	
 	#wirte assembly code that is the translation of given arithmetic command
 	def writeArithmetic(command)
-		
+
 	end
 	
 	#write assemvly code that is translation of given comand, where it is
@@ -49,32 +49,25 @@ class CodeWriter
 	end
 
 	 def push()
-        
 	end
 
     #Pops the stack and puts the value into the D register
     def pop()
-        
     end
 
     def pushFromRAM(index)
-       
 	end
 
     def preambleLocationInMemory(segmentVar)
-       
 	end
 
     def preambleLocationIsMemory(memoryLoc)
-        
 	end
 
     def storeToRAM(index)
-        
     end
 
     def greaterThanLessThanJump(jumpCmd)
-        
 	end
 
 	#close output file
@@ -108,25 +101,59 @@ class Parser
 	end
 
 	def current()
+        return @commands[@counter]
 	end
 
     def hasMoreCommands()
+       return @counter + 1 < @commands.length
 	end
 
     def advance()
+        @counter += 1
+        return @commands[@counter]
     end
 
     def commandType()
-        
+        for command in $ARITHMETIC_COMMANDS
+            if command == current()
+                return $C_ARITHMETIC
+			end
+		end
+        if /push/.match(current())
+            return $C_PUSH
+        elsif /pop/.match(current())
+            return $C_POP
+		end
 	end
 
 
     def arg1()
-        
+        if commandType() == $C_RETURN
+            raise TypeError("Trying to get the first argument on a return command")
+		end
+        if commandType() == $C_ARITHMETIC
+            result=/\w+/.match(current())
+            return result.string
+        else
+			result = current.gsub(/^\w+\s/, '')
+			result = result.gsub(/\d/, '')
+			result.strip
+			result.chomp
+			puts "res1: " + result
+            return result
+		end
     end  
        
     def arg2
-       
+        type = commandType()
+		puts type
+        if type != $C_PUSH and type != $C_POP and type != $C_FUNCTION and type != $C_CALL
+           raise TypeError("Cannot get the second argument for this command")
+		end
+		result = current.gsub(/\D+/, '')
+		puts "res2: " + result
+		result.chomp
+        return result
 	end
 
 	def close
