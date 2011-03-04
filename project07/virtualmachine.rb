@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-
+#Andrew Suter-Morris
 #make sure file is good
 def args_valid?
 	ARGV.size == 1 && File.exist?(ARGV[0]) || Dir.exist?(Dir.pwd + "/" + ARGV[0])
