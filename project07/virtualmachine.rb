@@ -203,22 +203,22 @@ class CodeWriter
     end
 
     def greaterThanLessThanJump(jumpCmd)
-        negateLbl = "negate" + @counter.to_s
-        setTrueLbl = "setTrue" + @counter.to_s
+        neg = "negate" + @counter.to_s
+        setTru = "setTrue" + @counter.to_s
         @counter += 1
         pop()
         @file.write("@SP\n")
         @file.write("A=M-1\n")
         @file.write("D=M-D\n")
-        @file.write("@" + setTrueLbl + "\n")
+        @file.write("@" + setTru + "\n")
         @file.write("D;" + jumpCmd + "\n")
         @file.write("D=0\n")
         @file.write("D=!D\n")
-        @file.write("@" + negateLbl + "\n")
+        @file.write("@" + neg + "\n")
         @file.write("0;JMP\n")
-        @file.write("(" + setTrueLbl + ")\n")
+        @file.write("(" + setTru + ")\n")
         @file.write("D=0\n")
-        @file.write("(" + negateLbl + ")\n")
+        @file.write("(" + neg + ")\n")
         @file.write("@SP\n")
         @file.write("A=M-1\n")
         @file.write("M=!D\n")
@@ -347,7 +347,7 @@ class Translate
 			if (@files.length == 0)
 				raise  StandardError, "No files to open"
 			end 
-			
+			puts @files
 			name = File.basename(dirname)
 			@output = dirname + "/" + name + ".asm"
 		elsif File.file?(path)
