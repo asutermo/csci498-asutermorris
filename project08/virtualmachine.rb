@@ -280,6 +280,16 @@ class Parser
             return $C_PUSH
         elsif /pop/.match(current())
             return $C_POP
+		elsif /goto/.match(current())
+			return $C_GOTO
+		elsif /if-goto/.match(current())
+			return $C_IF
+		elsif /function/.match(current())
+			return $C_FUNCTION
+		elsif /call/.match(current())
+			return $C_CALL
+		elsif /return/.match(current())
+			return $C_RETURN
 		end
 	end
 
