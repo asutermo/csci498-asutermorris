@@ -203,22 +203,22 @@ class CodeWriter
     end
 
     def greaterThanLessThanJump(jumpCmd)
-        negateLbl = "negate" + @counter.to_s
-        setTrueLbl = "setTrue" + @counter.to_s
+        neg = "negate" + @counter.to_s
+        setTru = "setTrue" + @counter.to_s
         @counter += 1
         pop()
         @file.write("@SP\n")
         @file.write("A=M-1\n")
         @file.write("D=M-D\n")
-        @file.write("@" + setTrueLbl + "\n")
+        @file.write("@" + setTru + "\n")
         @file.write("D;" + jumpCmd + "\n")
         @file.write("D=0\n")
         @file.write("D=!D\n")
-        @file.write("@" + negateLbl + "\n")
+        @file.write("@" + neg + "\n")
         @file.write("0;JMP\n")
-        @file.write("(" + setTrueLbl + ")\n")
+        @file.write("(" + setTru + ")\n")
         @file.write("D=0\n")
-        @file.write("(" + negateLbl + ")\n")
+        @file.write("(" + neg + ")\n")
         @file.write("@SP\n")
         @file.write("A=M-1\n")
         @file.write("M=!D\n")
@@ -339,22 +339,17 @@ class Translate
 	#this actually does the file/dir checking
 	def parse_filenames(path)
 		#first if checks if it's a directory, a file or neither
-		if Dir.exist?(path)
+		if File.directory?(path)
 			dirname = path.chomp
-			
-			#change our directory to the path, grab only .vm files
-			Dir.chdir(path)
-			@files = Dir.glob("*.vm")
-			
+			@files = File.join(path, "*.vm")
+			@files = Dir.glob(@files)
 			#if we have no files, there's nothing we can do, EXCEPTION
 			if (@files.length == 0)
 				raise  StandardError, "No files to open"
 			end 
-			
-			#generate our output path
-			Dir.chdir(path)
-			name = File.basename(Dir.getwd)
-			@output = name + ".asm"
+			puts @files
+			name = File.basename(dirname)
+			@output = dirname + "/" + name + ".asm"
 		elsif File.file?(path)
 			#make sure the file is of the .vm type
 			if (File.extname(path) == '.vm')
