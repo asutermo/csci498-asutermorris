@@ -10,15 +10,15 @@ unless args_valid?
 end
 
 #globals...so shoot me
-$C_ARITHMETIC = 0
-$C_PUSH = 1
-$C_POP = 2
-$C_LABEL = 3
-$C_GOTO = 4
-$C_IF = 5
-$C_FUNCTION = 6
-$C_RETURN = 7
-$C_CALL = 8 
+$ARITHMETIC = 0
+$PUSH = 1
+$POP = 2
+$LABEL = 3
+$GOTO = 4
+$IF = 5
+$FUNCTION = 6
+$RETURN = 7
+$CALL = 8 
 
 $ARITHMETIC_COMMANDS = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
 	
@@ -91,7 +91,7 @@ class CodeWriter
 	#write push or pop assembly code
 	def writePushPop(command, segment, index)
 		segment.rstrip!
-		if command == $C_PUSH
+		if command == $PUSH
             if segment == "constant" 
                 @file.write("@" + index.to_s + "\n")
                 @file.write("D=A\n")
@@ -121,7 +121,7 @@ class CodeWriter
             else
                 print("ERROR: segment undefined, segment given - " + segment)
 			end
-        elsif command == $C_POP
+        elsif command == $POP
             if segment == "argument"
                 preambleLocationInMemory("ARG")
                 storeToRAM(index)
@@ -148,6 +148,30 @@ class CodeWriter
                 print("ERROR: segment undefined, segment given - " + segment)
 			end
 		end
+	end
+
+	def writeLbl()
+
+	end
+
+	def writeGo()
+
+	end
+
+	def writeIf()
+
+	end
+
+	def writeFunc()
+	
+	end
+
+	def writeRet()
+
+	end
+
+	def writeCall()
+	
 	end
 
 	#push the stack
@@ -273,32 +297,32 @@ class Parser
     def commandType()
         for command in $ARITHMETIC_COMMANDS
             if command == current()
-                return $C_ARITHMETIC
+                return $ARITHMETIC
 			end
 		end
         if /push/.match(current())
-            return $C_PUSH
+            return $PUSH
         elsif /pop/.match(current())
-            return $C_POP
+            return $POP
 		elsif /goto/.match(current())
-			return $C_GOTO
+			return $GOTO
 		elsif /if-goto/.match(current())
-			return $C_IF
+			return $IF
 		elsif /function/.match(current())
-			return $C_FUNCTION
+			return $FUNCTION
 		elsif /call/.match(current())
-			return $C_CALL
+			return $CALL
 		elsif /return/.match(current())
-			return $C_RETURN
+			return $RETURN
 		end
 	end
 
 	#return argument 1
     def arg1()
-        if commandType() == $C_RETURN
+        if commandType() == $RETURN
             raise StandardError("Bad first argument")
 		end
-        if commandType() == $C_ARITHMETIC
+        if commandType() == $ARITHMETIC
             result=/\w+/.match(current())
             return result.string
         else
@@ -313,7 +337,7 @@ class Parser
 	#return argument two
     def arg2
         type = commandType()
-        if type != $C_PUSH and type != $C_POP and type != $C_FUNCTION and type != $C_CALL
+        if type != $PUSH and type != $POP and type != $FUNCTION and type != $CALL
            raise StandardError("Bad second argument")
 		end
 		result = current.gsub(/\D+/, '')
@@ -389,10 +413,11 @@ class Translate
 		#while we have more commands, advance and check command types
 		while parser.hasMoreCommands
 			parser.advance
-			if parser.commandType == $C_ARITHMETIC
+			if parser.commandType == $ARITHMETIC
 				@code.writeArithmetic(parser.arg1())
-			elsif parser.commandType == $C_PUSH || parser.commandType == $C_POP
+			elsif parser.commandType == $PUSH || parser.commandType == $POP
 				@code.writePushPop(parser.commandType, parser.arg1(), parser.arg2())
+			elsif parser.commandType == $LABEL
 			else 
 				raise "Command error"
 			end
