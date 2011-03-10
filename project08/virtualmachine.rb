@@ -29,6 +29,7 @@ class CodeWriter
 		@file = File.open(filepath, 'w')
 		@counter = 0
 		@currentName = ""
+		@curFunc = "" 
 	end
 	
 	#set file name 
@@ -148,6 +149,16 @@ class CodeWriter
                 print("ERROR: seg undefined, seg given - " + seg)
 			end
 		end
+	end
+
+	#determine label
+	def lblName(lbl)
+		return curFunc + "$" + lbl
+	end
+	
+	#print label
+	def writeLbl(lbl)
+		@file.write("("+lblName(lbl)+")\n")
 	end
 
 	#push the stack
@@ -383,6 +394,18 @@ class Translate
 				@code.writeArithmetic(parser.arg1())
 			elsif parser.commandType == $PUSH || parser.commandType == $POP
 				@code.writePushPop(parser.commandType, parser.arg1(), parser.arg2())
+			elsif parser.commandType == $LABEL
+				@code.writeLbl(parser.arg1())
+			elsif parser.commandType == $GOTO
+				@code.writeGo(parser.arg1())
+			elsif parser.commandType == $IF
+				@code.writeIf(parser.arg1())
+			elsif parser.commandType == $FUNCTION
+				@code.writeFunc(parser.arg1(), (int)(parser.arg2())
+			elsif parser.commandType == $RETURN
+				@code.writeRet()
+			elsif parser.commandType = $CALL
+				@code.writeCall(parser.arg1(), (int)(parser.arg2()))
 			else 
 				raise "Command error"
 			end
