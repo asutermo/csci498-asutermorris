@@ -30,6 +30,7 @@ class CodeWriter
 		@counter = 0
 		@currentName = ""
 		@curFunc = "" 
+		@retNum = 0
 	end
 	
 	#set file name 
@@ -37,14 +38,54 @@ class CodeWriter
 		@currentName = filename
 	end
 	
+	def writeCall(funcName, argu)
+		@file.write("@return" + @curFunc + @retNum.to_s + "\n")
+		@file.write("\n")
+        @file.write("D=A\n")
+        push()
+        @file.write("@LCL\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@ARG\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@THIS\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@THAT\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@SP\n")
+        @file.write("D=M\n")
+        @file.write("@ARG\n")
+        @file.write("M=D\n")
+        @file.write("@" + argu.to_s + "\n")
+        @file.write("D=A\n")
+        @file.write("@ARG\n")
+        @file.write("M=M-D\n")
+        @file.write("@5\n")
+        @file.write("D=A\n")
+        @file.write("@ARG\n")
+        @file.write("M=M-D\n")
+        @file.write("@SP\n")
+        @file.write("D=M\n")
+        @file.write("@LCL\n")
+        @file.write("M=D\n")
+        @file.write("@" + funcName + "\n")
+        @file.write("0;JMP\n")
+        @file.write("(return" + @curFunc + @retNum.to_s + ")\n")
+        @retNum += 1
+	end
+
 	#set initial address
 	def wIn()
 		@file.write("@256\n")
 		@file.write("D=A\n")
 		@file.write("@SP\n")
 		@file.write("M=D\n")
-		#@file.write("", 0)
+		writeCall("Sys.init", 0)
 	end
+
 
 	#provide the arithmetic translation of the code
 	def writeArithmetic(command)
@@ -319,6 +360,8 @@ class Parser
 			return $GOTO
 		elsif /if-goto/.match(current())
 			return $IF
+		elsif /call/.match(current())
+			return $CALL
 		end
 	end
 
@@ -367,7 +410,7 @@ class Translate
 		
 		#generate a code writer
 		@code = CodeWriter.new(@output)
-		#@code.wIn()
+		@code.wIn()
 		
 		#begin the processing
 		@files.each { |file| process_filenames(file) }
@@ -429,6 +472,8 @@ class Translate
 				@code.writeGo(parser.arg1())
 			elsif parser.commandType == $IF
 				@code.writeIf(parser.arg1())
+			elsif parser.commandType() == $CALL
+				@code.writeCall(parser.arg1(), parser.arg2())
 			else 
 				raise "Command error"
 			end
