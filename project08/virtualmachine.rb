@@ -39,7 +39,7 @@ class CodeWriter
 	end
 	
 	def writeCall(funcName, argu)
-		@file.write("@return" + @curFunc + @retNum.to_s + "\n")
+		@file.write("@return" + funcName + @retNum.to_s + "\n")
 		@file.write("\n")
         @file.write("D=A\n")
         push()
@@ -73,7 +73,7 @@ class CodeWriter
         @file.write("M=D\n")
         @file.write("@" + funcName + "\n")
         @file.write("0;JMP\n")
-        @file.write("(return" + @curFunc + @retNum.to_s + ")\n")
+        @file.write("(return" + funcName + @retNum.to_s + ")\n")
         @retNum += 1
 	end
 
@@ -224,6 +224,58 @@ class CodeWriter
 		@file.write("D;JNE\n")
 	end
 
+	def writeRet()
+        @file.write("@LCL\n")
+        @file.write("D=M\n")
+        @file.write("@R13\n")
+        @file.write("M=D\n")
+        @file.write("@R14\n") 
+        @file.write("M=D\n")
+        @file.write("@5\n")
+        @file.write("D=A\n")
+        @file.write("@R14\n")
+        @file.write("M=M-D\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@R14\n")
+        @file.write("M=D\n")
+        pop()
+        @file.write("@ARG\n")
+        @file.write("A=M\n")
+        @file.write("M=D\n")
+        @file.write("@ARG\n")
+        @file.write("D=M\n")
+        @file.write("@SP\n")
+        @file.write("M=D+1\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@THAT\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@THIS\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@ARG\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@LCL\n")
+        @file.write("M=D\n")
+        @file.write("@R14\n")
+        @file.write("A=M\n")
+        @file.write("0;JMP\n")
+	end
+
 	#push the stack
 	def push()
         @file.write("@SP\n")
@@ -362,6 +414,8 @@ class Parser
 			return $IF
 		elsif /call/.match(current())
 			return $CALL
+		elsif /return/.match(current())
+			return $RETURN
 		end
 	end
 
@@ -474,6 +528,8 @@ class Translate
 				@code.writeIf(parser.arg1())
 			elsif parser.commandType() == $CALL
 				@code.writeCall(parser.arg1(), parser.arg2())
+			elsif parser.commandType() == $RETURN
+				@code.writeRet()
 			else 
 				raise "Command error"
 			end

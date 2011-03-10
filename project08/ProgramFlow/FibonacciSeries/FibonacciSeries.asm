@@ -2,7 +2,7 @@
 D=A
 @SP
 M=D
-@return0
+@returnSys.init0
 
 D=A
 @SP
@@ -56,7 +56,7 @@ D=M
 M=D
 @Sys.init
 0;JMP
-(return0)
+(returnSys.init0)
 @ARG
 D=M
 @1
