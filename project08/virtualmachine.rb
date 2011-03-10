@@ -162,7 +162,7 @@ class CodeWriter
 
 	#determine label
 	def lblName(lbl)
-		return curFunc + "$" + lbl
+		return @curFunc + "$" + lbl
 	end
 	
 	#print label
@@ -313,6 +313,12 @@ class Parser
             return $PUSH
         elsif /pop/.match(current())
             return $POP
+		elsif /label/.match(current())
+			return $LABEL
+		elsif /goto/.match(current())
+			return $GOTO
+		elsif /if-goto/.match(current())
+			return $IF
 		end
 	end
 
@@ -423,12 +429,6 @@ class Translate
 				@code.writeGo(parser.arg1())
 			elsif parser.commandType == $IF
 				@code.writeIf(parser.arg1())
-			elsif parser.commandType == $FUNCTION
-				@code.writeFunc(parser.arg1(), (int)(parser.arg2())
-			elsif parser.commandType == $RETURN
-				@code.writeRet()
-			elsif parser.commandType = $CALL
-				@code.writeCall(parser.arg1(), (int)(parser.arg2()))
 			else 
 				raise "Command error"
 			end
