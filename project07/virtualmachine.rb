@@ -82,70 +82,70 @@ class CodeWriter
             @file.write("A=M-1\n")
             @file.write("M=!D\n")
         elsif command == "lt"
-            greaterThanLessThanJump("JLT")
+            glJump("JLT")
         elsif command == "gt"
-            greaterThanLessThanJump("JGT")
+            glJump("JGT")
 		end
 	end
 	
 	#write push or pop assembly code
-	def writePushPop(command, segment, index)
-		segment.rstrip!
+	def writePushPop(command, seg, index)
+		seg.rstrip!
 		if command == $PUSH
-            if segment == "constant" 
+            if seg == "constant" 
                 @file.write("@" + index.to_s + "\n")
                 @file.write("D=A\n")
                 push()
-            elsif segment == "argument"
-                preambleLocationInMemory("ARG")
-                pushFromRAM(index)
-            elsif segment == "local"
-                preambleLocationInMemory("LCL")
-                pushFromRAM(index)
-            elsif segment == "this"
-                preambleLocationInMemory("THIS")
-                pushFromRAM(index)
-            elsif segment == "that"
-                preambleLocationInMemory("THAT")
-                pushFromRAM(index)
-            elsif segment == "temp"
-                preambleLocationIsMemory("5")
-                pushFromRAM(index)
-            elsif segment == "pointer"
-                preambleLocationIsMemory("3")
-                pushFromRAM(index)
-            elsif segment == "static"
+            elsif seg == "argument"
+                locInMem("ARG")
+                pfRAM(index)
+            elsif seg == "local"
+                locInMem("LCL")
+                pfRAM(index)
+            elsif seg == "this"
+                locInMem("THIS")
+                pfRAM(index)
+            elsif seg == "that"
+                locInMem("THAT")
+                pfRAM(index)
+            elsif seg == "temp"
+                plMemory("5")
+                pfRAM(index)
+            elsif seg == "pointer"
+                plMemory("3")
+                pfRAM(index)
+            elsif seg == "static"
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
                 @file.write("D=M\n")
                 push()
             else
-                print("ERROR: segment undefined, segment given - " + segment)
+                print("ERROR: seg undefined, seg given - " + seg)
 			end
         elsif command == $POP
-            if segment == "argument"
-                preambleLocationInMemory("ARG")
-                storeToRAM(index)
-            elsif segment == "local"
-                preambleLocationInMemory("LCL")
-                storeToRAM(index)
-            elsif segment == "this"
-                preambleLocationInMemory("THIS")
-                storeToRAM(index)
-            elsif segment == "that"
-                preambleLocationInMemory("THAT")
-                storeToRAM(index)
-            elsif segment == "temp"
-                preambleLocationIsMemory("5")
-                storeToRAM(index)
-            elsif segment == "pointer"
-                preambleLocationIsMemory("3")
-                storeToRAM(index)
-            elsif segment == "static"
+            if seg == "argument"
+                locInMem("ARG")
+                storeRAM(index)
+            elsif seg == "local"
+                locInMem("LCL")
+                storeRAM(index)
+            elsif seg == "this"
+                locInMem("THIS")
+                storeRAM(index)
+            elsif seg == "that"
+                locInMem("THAT")
+                storeRAM(index)
+            elsif seg == "temp"
+                plMemory("5")
+                storeRAM(index)
+            elsif seg == "pointer"
+                plMemory("3")
+                storeRAM(index)
+            elsif seg == "static"
                 pop()
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
                 @file.write("M=D\n")
             else
-                print("ERROR: segment undefined, segment given - " + segment)
+                print("ERROR: seg undefined, seg given - " + seg)
 			end
 		end
 	end
@@ -168,25 +168,25 @@ class CodeWriter
     end
 
 	#push from ram
-    def pushFromRAM(index)
+    def pfRAM(index)
         @file.write("@" + index + "\n")
         @file.write("A=D+A\n")
         @file.write("D=M\n")
         push()
 	end
 
-    def preambleLocationInMemory(segmentVar)
+    def locInMem(segmentVar)
         @file.write("@" + segmentVar + "\n")
         @file.write("D=M\n")
 	end
 
-    def preambleLocationIsMemory(memoryLoc)
+    def plMemory(memoryLoc)
         @file.write("@" + memoryLoc.to_s + "\n")
         @file.write("D=A\n")
 	end
 
 	#store 
-    def storeToRAM(index)
+    def storeRAM(index)
         @file.write("@13\n") 
         @file.write("M=D\n")
         @file.write("@" + index + "\n")
@@ -202,7 +202,7 @@ class CodeWriter
         @file.write("M=D\n")
     end
 
-    def greaterThanLessThanJump(jumpCmd)
+    def glJump(jumpCmd)
         neg = "negate" + @counter.to_s
         setTru = "setTrue" + @counter.to_s
         @counter += 1
