@@ -37,6 +37,15 @@ class CodeWriter
 		@currentName = filename
 	end
 	
+	#set initial address
+	def wIn()
+		@file.write("@256\n")
+		@file.write("D=A\n")
+		@file.write("@SP\n")
+		@file.write("M=D\n")
+		#@file.write("", 0)
+	end
+
 	#provide the arithmetic translation of the code
 	def writeArithmetic(command)
 		if command == "add"
@@ -157,8 +166,21 @@ class CodeWriter
 	end
 	
 	#print label
-	def writeLbl(lbl)
-		@file.write("("+lblName(lbl)+")\n")
+	def writeLbl(command)
+		@file.write("("+lblName(command)+")\n")
+	end
+
+	#write goto statement
+	def writeGo(command)
+		@file.write("@"+lblName(command)+"\n")
+		@file.write("0;JMP\n")
+	end
+
+	#write goto-if statement
+	def writeIf(command)
+		pop()
+		@file.write("@"+lblName(command)+"\n")
+		@file.write("D;JNE\n")
 	end
 
 	#push the stack
@@ -339,6 +361,7 @@ class Translate
 		
 		#generate a code writer
 		@code = CodeWriter.new(@output)
+		#@code.wIn()
 		
 		#begin the processing
 		@files.each { |file| process_filenames(file) }
