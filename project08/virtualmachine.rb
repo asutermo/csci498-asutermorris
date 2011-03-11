@@ -21,7 +21,7 @@ $RETURN = 7
 $CALL = 8 
 
 $ARITHMETIC_COMMANDS = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
-	
+
 class CodeWriter
 	#open output file stream, get ready to write to it
 	def initialize(filepath)
@@ -32,59 +32,59 @@ class CodeWriter
 		@curFunc = "" 
 		@retNum = 0
 	end
-	
+
 	#set file name 
 	def setFileName(filename)
 		@currentName = filename
 	end
-	
-	def writeCall(funcName, argu)
-		puts funcName
-		@file.write("@return" + funcName + @retNum.to_s + "\n")
-        @file.write("D=A\n")
-        push()
-        @file.write("@LCL\n")
-        @file.write("D=M\n")
-        push()
-        @file.write("@ARG\n")
-        @file.write("D=M\n")
-        push()
-        @file.write("@THIS\n")
-        @file.write("D=M\n")
-        push()
-        @file.write("@THAT\n")
-        @file.write("D=M\n")
-        push()
-        @file.write("@SP\n")
-        @file.write("D=M\n")
-        @file.write("@ARG\n")
-        @file.write("M=D\n")
-        @file.write("@" + argu.to_s + "\n")
-        @file.write("D=A\n")
-        @file.write("@ARG\n")
-        @file.write("M=M-D\n")
-        @file.write("@5\n")
-        @file.write("D=A\n")
-        @file.write("@ARG\n")
-        @file.write("M=M-D\n")
-        @file.write("@SP\n")
-        @file.write("D=M\n")
-        @file.write("@LCL\n")
-        @file.write("M=D\n")
-        @file.write("@" + funcName + "\n")
-        @file.write("0;JMP\n")
-        @file.write("(return" + funcName + @retNum.to_s + ")\n")
-        @retNum += 1
-	end
 
-	#set initial address
-	def wIn()
-		@file.write("@256\n")
-		@file.write("D=A\n")
-		@file.write("@SP\n")
-		@file.write("M=D\n")
-		writeCall("Sys.init", 0)
-	end
+	# def writeCall(funcName, argu)
+		# puts funcName
+		# @file.write("@return" + funcName + @retNum.to_s + "\n")
+        # @file.write("D=A\n")
+        # push()
+        # @file.write("@LCL\n")
+        # @file.write("D=M\n")
+        # push()
+        # @file.write("@ARG\n")
+        # @file.write("D=M\n")
+        # push()
+        # @file.write("@THIS\n")
+        # @file.write("D=M\n")
+        # push()
+        # @file.write("@THAT\n")
+        # @file.write("D=M\n")
+        # push()
+        # @file.write("@SP\n")
+        # @file.write("D=M\n")
+        # @file.write("@ARG\n")
+        # @file.write("M=D\n")
+        # @file.write("@" + argu.to_s + "\n")
+        # @file.write("D=A\n")
+        # @file.write("@ARG\n")
+        # @file.write("M=M-D\n")
+        # @file.write("@5\n")
+        # @file.write("D=A\n")
+        # @file.write("@ARG\n")
+        # @file.write("M=M-D\n")
+        # @file.write("@SP\n")
+        # @file.write("D=M\n")
+        # @file.write("@LCL\n")
+        # @file.write("M=D\n")
+        # @file.write("@" + funcName + "\n")
+        # @file.write("0;JMP\n")
+        # @file.write("(return" + funcName + @retNum.to_s + ")\n")
+        # @retNum += 1
+	# end
+
+	# #set initial address
+	# def wIn()
+		# @file.write("@256\n")
+		# @file.write("D=A\n")
+		# @file.write("@SP\n")
+		# @file.write("M=D\n")
+		# # writeCall("Sys.init", 0)
+	# end
 
 
 	#provide the arithmetic translation of the code
@@ -138,7 +138,7 @@ class CodeWriter
             glJump("JGT")
 		end
 	end
-	
+
 	#write push or pop assembly code
 	def writePushPop(command, seg, index)
 		seg.rstrip!
@@ -205,7 +205,7 @@ class CodeWriter
 	def lblName(lbl)
 		return @curFunc + "$" + lbl
 	end
-	
+
 	#print label
 	def writeLbl(command)
 		@file.write("("+lblName(command)+")\n")
@@ -224,74 +224,74 @@ class CodeWriter
 		@file.write("D;JNE\n")
 	end
 
-	def writeFunc(funcName, lcl)
-		@curFunc = funcName
-		@retNum = 0
-		@file.write("(" + funcName + ")\n")
-		cnt = 0
-		while (cnt < (lcl.to_i))
-			@file.write("@SP\n")
-			@file.write("A=M\n")
-			@file.write("M=0\n")
-			@file.write("@SP\n")
-			@file.write("M=M+1\n")
-			cnt = cnt + 1
-		end
-		
-	end
+	# def writeFunc(funcName, lcl)
+		# @curFunc = funcName
+		# @retNum = 0
+		# @file.write("(" + funcName + ")\n")
+		# cnt = 0
+		# while (cnt < (lcl.to_i))
+			# @file.write("@SP\n")
+			# @file.write("A=M\n")
+			# @file.write("M=0\n")
+			# @file.write("@SP\n")
+			# @file.write("M=M+1\n")
+			# cnt = cnt + 1
+		# end
+
+	# end
 
 
-	def writeRet()
-        @file.write("@LCL\n")
-        @file.write("D=M\n")
-        @file.write("@R13\n")
-        @file.write("M=D\n")
-        @file.write("@R14\n") 
-        @file.write("M=D\n")
-        @file.write("@5\n")
-        @file.write("D=A\n")
-        @file.write("@R14\n")
-        @file.write("M=M-D\n")
-        @file.write("A=M\n")
-        @file.write("D=M\n")
-        @file.write("@R14\n")
-        @file.write("M=D\n")
-        pop()
-        @file.write("@ARG\n")
-        @file.write("A=M\n")
-        @file.write("M=D\n")
-        @file.write("@ARG\n")
-        @file.write("D=M\n")
-        @file.write("@SP\n")
-        @file.write("M=D+1\n")
-        @file.write("@R13\n")
-        @file.write("M=M-1\n")
-        @file.write("A=M\n")
-        @file.write("D=M\n")
-        @file.write("@THAT\n")
-        @file.write("M=D\n")
-        @file.write("@R13\n")
-        @file.write("M=M-1\n")
-        @file.write("A=M\n")
-        @file.write("D=M\n")
-        @file.write("@THIS\n")
-        @file.write("M=D\n")
-        @file.write("@R13\n")
-        @file.write("M=M-1\n")
-        @file.write("A=M\n")
-        @file.write("D=M\n")
-        @file.write("@ARG\n")
-        @file.write("M=D\n")
-        @file.write("@R13\n")
-        @file.write("M=M-1\n")
-        @file.write("A=M\n")
-        @file.write("D=M\n")
-        @file.write("@LCL\n")
-        @file.write("M=D\n")
-        @file.write("@R14\n")
-        @file.write("A=M\n")
-        @file.write("0;JMP\n")
-	end
+	# def writeRet()
+        # @file.write("@LCL\n")
+        # @file.write("D=M\n")
+        # @file.write("@R13\n")
+        # @file.write("M=D\n")
+        # @file.write("@R14\n") 
+        # @file.write("M=D\n")
+        # @file.write("@5\n")
+        # @file.write("D=A\n")
+        # @file.write("@R14\n")
+        # @file.write("M=M-D\n")
+        # @file.write("A=M\n")
+        # @file.write("D=M\n")
+        # @file.write("@R14\n")
+        # @file.write("M=D\n")
+        # pop()
+        # @file.write("@ARG\n")
+        # @file.write("A=M\n")
+        # @file.write("M=D\n")
+        # @file.write("@ARG\n")
+        # @file.write("D=M\n")
+        # @file.write("@SP\n")
+        # @file.write("M=D+1\n")
+        # @file.write("@R13\n")
+        # @file.write("M=M-1\n")
+        # @file.write("A=M\n")
+        # @file.write("D=M\n")
+        # @file.write("@THAT\n")
+        # @file.write("M=D\n")
+        # @file.write("@R13\n")
+        # @file.write("M=M-1\n")
+        # @file.write("A=M\n")
+        # @file.write("D=M\n")
+        # @file.write("@THIS\n")
+        # @file.write("M=D\n")
+        # @file.write("@R13\n")
+        # @file.write("M=M-1\n")
+        # @file.write("A=M\n")
+        # @file.write("D=M\n")
+        # @file.write("@ARG\n")
+        # @file.write("M=D\n")
+        # @file.write("@R13\n")
+        # @file.write("M=M-1\n")
+        # @file.write("A=M\n")
+        # @file.write("D=M\n")
+        # @file.write("@LCL\n")
+        # @file.write("M=D\n")
+        # @file.write("@R14\n")
+        # @file.write("A=M\n")
+        # @file.write("0;JMP\n")
+	# end
 
 	#push the stack
 	def push()
@@ -395,7 +395,7 @@ class Parser
 		end
 		@counter = -1
 	end
-	
+
 	#current command
 	def current()
         return @commands[@counter]
@@ -477,21 +477,21 @@ class Translate
 		#modify path, make instance vars
 		path = Dir.pwd + "/" + path
 		@output = ''
-		
+
 		#parse the file
 		@files = parse_filenames(path)
-		
+
 		#generate a code writer
 		@code = CodeWriter.new(@output)
-		@code.wIn()
-		
+		# @code.wIn()
+
 		#begin the processing
 		@files.each { |file| process_filenames(file) }
-		
+
 		#close the code writer
 		@code.close()
 	end
-	
+
 	#this actually does the file/dir checking
 	def parse_filenames(path)
 		#first if checks if it's a directory, a file or neither
@@ -521,11 +521,11 @@ class Translate
 		else
 			raise "ERROR, not a file or directory!"
 		end
-		
+
 		#return everything
 		return @files
 	end
-			
+
 	#start processing
 	def process_filenames(path)
 		#objects
@@ -545,17 +545,17 @@ class Translate
 				@code.writeGo(parser.arg1())
 			elsif parser.commandType == $IF
 				@code.writeIf(parser.arg1())
-			elsif parser.commandType() == $CALL
-				@code.writeCall(parser.arg1(), parser.arg2())
-			elsif parser.commandType() == $RETURN
-				@code.writeRet()
-			elsif parser.commandType() == $FUNCTION
-				@code.writeFunc(parser.arg1, parser.arg2)
+			# elsif parser.commandType() == $CALL
+				# @code.writeCall(parser.arg1(), parser.arg2())
+			# elsif parser.commandType() == $RETURN
+				# @code.writeRet()
+			# elsif parser.commandType() == $FUNCTION
+				# @code.writeFunc(parser.arg1, parser.arg2)
 			else 
 				raise "Command error"
 			end
 		end
-		
+
 		#close object
 		parser.close()
 	end
