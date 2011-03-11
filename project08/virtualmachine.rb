@@ -39,8 +39,8 @@ class CodeWriter
 	end
 	
 	def writeCall(funcName, argu)
+		puts funcName
 		@file.write("@return" + funcName + @retNum.to_s + "\n")
-		@file.write("\n")
         @file.write("D=A\n")
         push()
         @file.write("@LCL\n")
@@ -116,8 +116,8 @@ class CodeWriter
         elsif command == "not"
             pop()
             @file.write("@SP\n")
-            @file.write("A=M\n")
-            @file.write("M=!D")
+            @file.write("A=M-1\n")
+            @file.write("M=!M")
         elsif command == "eq"
             label = "negate" + @counter.to_s
 			@counter += 1
@@ -223,6 +223,23 @@ class CodeWriter
 		@file.write("@"+lblName(command)+"\n")
 		@file.write("D;JNE\n")
 	end
+
+	def writeFunc(funcName, lcl)
+		@curFunc = funcName
+		@retNum = 0
+		@file.write("(" + funcName + ")\n")
+		cnt = 0
+		while (cnt < (lcl.to_i))
+			@file.write("@SP\n")
+			@file.write("A=M\n")
+			@file.write("M=0\n")
+			@file.write("@SP\n")
+			@file.write("M=M+1\n")
+			cnt = cnt + 1
+		end
+		
+	end
+
 
 	def writeRet()
         @file.write("@LCL\n")
@@ -416,6 +433,8 @@ class Parser
 			return $CALL
 		elsif /return/.match(current())
 			return $RETURN
+		elsif /function/.match(current())
+			return $FUNCTION
 		end
 	end
 
@@ -530,6 +549,8 @@ class Translate
 				@code.writeCall(parser.arg1(), parser.arg2())
 			elsif parser.commandType() == $RETURN
 				@code.writeRet()
+			elsif parser.commandType() == $FUNCTION
+				@code.writeFunc(parser.arg1, parser.arg2)
 			else 
 				raise "Command error"
 			end
