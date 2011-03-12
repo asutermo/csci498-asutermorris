@@ -332,7 +332,21 @@ class Parser
             result=/\w+/.match(current())
 			puts "arg1 " + result.to_s
             return result.string
+		elsif commandType() == $LABEL
+			result = current.gsub(/\s+(\S+)/, '')
+			result.strip
+			result.chomp
+			puts "arg1 " + result
+			return result
+		elsif commandType() == $IF
+			result = current.gsub(/\s+(\S+)/, '')
+			result.strip
+			result.chomp
+			puts "arg1 " + result
+			return result
         else
+			#puts current.to_s
+			#result = (current.match(/\S+\s+(\S+)/)).to_s
 			result = current.gsub(/^\w+\s/, '')
 			result = result.gsub(/\d/, '')
 			result.strip

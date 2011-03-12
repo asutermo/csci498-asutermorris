@@ -20,7 +20,7 @@ D=M
 @13
 A=M
 M=D
-($LOOP_START)
+($label)
 @ARG
 D=M
 @0
@@ -116,7 +116,7 @@ M=M+1
 M=M-1
 A=M
 D=M
-@$if-goto LOOP_START
+@$if-goto
 D;JNE
 @LCL
 D=M
