@@ -38,7 +38,6 @@ class CodeWriter
 	end
 
 	def writeCall(funcName, argu)
-		puts funcName
 		@file.write("@return" + funcName + @retNum.to_s + "\n")
         @file.write("D=A\n")
         push()
@@ -141,7 +140,6 @@ class CodeWriter
 	#write push or pop assembly code
 	def writePushPop(command, seg, index)
 		seg.rstrip!
-		puts @currentName
 		if command == $PUSH
             if seg == "constant" 
                 @file.write("@" + index.to_s + "\n")
@@ -203,19 +201,17 @@ class CodeWriter
 
 	#determine label
 	def lblName(lbl)
-		return @curFunc + "$" + lbl
+		return "$" + lbl
 	end
 
 	#print label
 	def writeLbl(command)
-		puts "Write lbl " + command
 		command.rstrip!
 		@file.write("("+lblName(command)+")\n")
 	end
 
 	#write goto statement
 	def writeGo(command)
-		puts "Go " + command
 		command.rstrip!
 		@file.write("@"+lblName(command)+"\n")
 		@file.write("0;JMP\n")
@@ -223,7 +219,6 @@ class CodeWriter
 
 	#write goto-if statement
 	def writeIf(command)
-		puts "If " + command
 		command.rstrip!
 		pop()
 		@file.write("@"+lblName(command)+"\n")
@@ -320,7 +315,6 @@ class CodeWriter
 
 	#push from ram
     def pfRAM(index)
-		puts "pf RAM " + index
         @file.write("@" + index + "\n")
         @file.write("A=D+A\n")
         @file.write("D=M\n")
@@ -328,20 +322,17 @@ class CodeWriter
 	end
 
     def locInMem(segmentVar)
-		puts "Seg var " + segmentVar
         @file.write("@" + segmentVar + "\n")
         @file.write("D=M\n")
 	end
 
     def plMemory(memoryLoc)
-		puts "PL mem " + memoryLoc
         @file.write("@" + memoryLoc.to_s + "\n")
         @file.write("D=A\n")
 	end
 
 	#store 
     def storeRAM(index)
-		puts "Ram " + index
         @file.write("@13\n") 
         @file.write("M=D\n")
         @file.write("@" + index + "\n")
@@ -582,5 +573,5 @@ begin
 	trans = Translate.new(path)
 rescue Exception => e
 	puts "Error you suck!"
-	puts e
+	puts e.backtrace
 end
