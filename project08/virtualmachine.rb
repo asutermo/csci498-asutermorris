@@ -37,6 +37,55 @@ class CodeWriter
 		@currentName = filename
 	end
 
+	def writeCall(funcName, argu)
+		puts funcName
+		@file.write("@return" + funcName + @retNum.to_s + "\n")
+        @file.write("D=A\n")
+        push()
+        @file.write("@LCL\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@ARG\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@THIS\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@THAT\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@SP\n")
+        @file.write("D=M\n")
+        @file.write("@ARG\n")
+        @file.write("M=D\n")
+        @file.write("@" + argu.to_s + "\n")
+        @file.write("D=A\n")
+        @file.write("@ARG\n")
+        @file.write("M=M-D\n")
+        @file.write("@5\n")
+        @file.write("D=A\n")
+        @file.write("@ARG\n")
+        @file.write("M=M-D\n")
+        @file.write("@SP\n")
+        @file.write("D=M\n")
+        @file.write("@LCL\n")
+        @file.write("M=D\n")
+        @file.write("@" + funcName + "\n")
+        @file.write("0;JMP\n")
+        @file.write("(return" + funcName + @retNum.to_s + ")\n")
+        @retNum += 1
+	end
+
+	#set initial address
+	def wIn()
+		@file.write("@256\n")
+		@file.write("D=A\n")
+		@file.write("@SP\n")
+		@file.write("M=D\n")
+		writeCall("Sys.init", 0)
+	end
+
+
 	#provide the arithmetic translation of the code
 	def writeArithmetic(command)
 		if command == "add"
@@ -92,6 +141,7 @@ class CodeWriter
 	#write push or pop assembly code
 	def writePushPop(command, seg, index)
 		seg.rstrip!
+		puts @currentName
 		if command == $PUSH
             if seg == "constant" 
                 @file.write("@" + index.to_s + "\n")
@@ -146,24 +196,26 @@ class CodeWriter
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
                 @file.write("M=D\n")
             else
-                puts "ERROR: seg undefined, seg given - " + seg
+                print("ERROR: seg undefined, seg given - " + seg)
 			end
 		end
 	end
 
 	#determine label
 	def lblName(lbl)
-		return "$" + lbl
+		return @curFunc + "$" + lbl
 	end
 
 	#print label
 	def writeLbl(command)
+		puts "Write lbl " + command
 		command.rstrip!
 		@file.write("("+lblName(command)+")\n")
 	end
 
 	#write goto statement
 	def writeGo(command)
+		puts "Go " + command
 		command.rstrip!
 		@file.write("@"+lblName(command)+"\n")
 		@file.write("0;JMP\n")
@@ -171,10 +223,82 @@ class CodeWriter
 
 	#write goto-if statement
 	def writeIf(command)
+		puts "If " + command
 		command.rstrip!
 		pop()
 		@file.write("@"+lblName(command)+"\n")
 		@file.write("D;JNE\n")
+	end
+
+	def writeFunc(funcName, lcl)
+		funcName.rstrip!
+		@curFunc = funcName
+		@retNum = 0
+		@file.write("(" + funcName + ")\n")
+		cnt = 0
+		puts "func " + funcName
+		while (cnt < (lcl.to_i))
+			@file.write("@SP\n")
+			@file.write("A=M\n")
+			@file.write("M=0\n")
+			@file.write("@SP\n")
+			@file.write("M=M+1\n")
+			cnt = cnt + 1
+		end
+
+	end
+
+
+	def writeRet()
+        @file.write("@LCL\n")
+        @file.write("D=M\n")
+        @file.write("@R13\n")
+        @file.write("M=D\n")
+        @file.write("@R14\n") 
+        @file.write("M=D\n")
+        @file.write("@5\n")
+        @file.write("D=A\n")
+        @file.write("@R14\n")
+        @file.write("M=M-D\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@R14\n")
+        @file.write("M=D\n")
+        pop()
+        @file.write("@ARG\n")
+        @file.write("A=M\n")
+        @file.write("M=D\n")
+        @file.write("@ARG\n")
+        @file.write("D=M\n")
+        @file.write("@SP\n")
+        @file.write("M=D+1\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@THAT\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@THIS\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@ARG\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@LCL\n")
+        @file.write("M=D\n")
+        @file.write("@R14\n")
+        @file.write("A=M\n")
+        @file.write("0;JMP\n")
 	end
 
 	#push the stack
@@ -196,6 +320,7 @@ class CodeWriter
 
 	#push from ram
     def pfRAM(index)
+		puts "pf RAM " + index
         @file.write("@" + index + "\n")
         @file.write("A=D+A\n")
         @file.write("D=M\n")
@@ -203,17 +328,20 @@ class CodeWriter
 	end
 
     def locInMem(segmentVar)
+		puts "Seg var " + segmentVar
         @file.write("@" + segmentVar + "\n")
         @file.write("D=M\n")
 	end
 
     def plMemory(memoryLoc)
+		puts "PL mem " + memoryLoc
         @file.write("@" + memoryLoc.to_s + "\n")
         @file.write("D=A\n")
 	end
 
 	#store 
     def storeRAM(index)
+		puts "Ram " + index
         @file.write("@13\n") 
         @file.write("M=D\n")
         @file.write("@" + index + "\n")
@@ -230,6 +358,7 @@ class CodeWriter
     end
 
     def glJump(jumpCmd)
+		puts jumpCmd
         neg = "negate" + @counter.to_s
         setTru = "setTrue" + @counter.to_s
         @counter += 1
@@ -271,8 +400,7 @@ class Parser
 			if (@lines.empty?)
 				next
 			end
-			@stripped.gsub!(/\/\/.*/, "")
-			if !(@stripped.length == 0)
+			if !(/\/\//.match(@stripped) or @stripped.length == 0)
 				@commands << @stripped
 			else
 				next
@@ -310,10 +438,10 @@ class Parser
             return $POP
 		elsif /label/.match(current())
 			return $LABEL
-		elsif /if-goto/.match(current())
-			return $IF
 		elsif /goto/.match(current())
 			return $GOTO
+		elsif /if-goto/.match(current())
+			return $IF
 		elsif /call/.match(current())
 			return $CALL
 		elsif /return/.match(current())
@@ -330,28 +458,12 @@ class Parser
 		end
         if commandType() == $ARITHMETIC
             result=/\w+/.match(current())
-			puts "arg1 " + result.to_s
             return result.string
-		elsif commandType() == $LABEL
-			result = current.gsub(/\s+(\S+)/, '')
-			result.strip
-			result.chomp
-			puts "arg1 " + result
-			return result
-		elsif commandType() == $IF
-			result = current.gsub(/\s+(\S+)/, '')
-			result.strip
-			result.chomp
-			puts "arg1 " + result
-			return result
         else
-			#puts current.to_s
-			#result = (current.match(/\S+\s+(\S+)/)).to_s
 			result = current.gsub(/^\w+\s/, '')
 			result = result.gsub(/\d/, '')
 			result.strip
 			result.chomp
-			puts "arg1 " + result
             return result
 		end
     end  
@@ -384,6 +496,7 @@ class Translate
 
 		#generate a code writer
 		@code = CodeWriter.new(@output)
+		@code.wIn()
 
 		#begin the processing
 		@files.each { |file| process_filenames(file) }
@@ -469,5 +582,5 @@ begin
 	trans = Translate.new(path)
 rescue Exception => e
 	puts "Error you suck!"
-	puts e.backtrace
+	puts e
 end
