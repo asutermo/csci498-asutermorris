@@ -115,7 +115,7 @@ class CodeWriter
             pop()
             @file.write("@SP\n")
             @file.write("A=M-1\n")
-            @file.write("M=!M")
+            @file.write("M=!M\n")
         elsif command == "eq"
             label = "negate" + @counter.to_s
 			@counter += 1
@@ -391,12 +391,14 @@ class Parser
 			if (@lines.empty?)
 				next
 			end
-			if !(/\/\//.match(@stripped) or @stripped.length == 0)
+			@stripped.gsub!(/\/\/.*/, '')
+			if !(@stripped.length == 0)
 				@commands << @stripped
 			else
 				next
 			end
 		end
+		puts @commands
 		@counter = -1
 	end
 
@@ -429,10 +431,10 @@ class Parser
             return $POP
 		elsif /label/.match(current())
 			return $LABEL
-		elsif /goto/.match(current())
-			return $GOTO
 		elsif /if-goto/.match(current())
 			return $IF
+		elsif /goto/.match(current())
+			return $GOTO
 		elsif /call/.match(current())
 			return $CALL
 		elsif /return/.match(current())
@@ -535,7 +537,6 @@ class Translate
 		#objects
 		parser = Parser.new(path)
 		fname = File.basename(path)
-		puts fname
 		@code.setFileName(fname)
 
 		#while we have more commands, advance and check command types
