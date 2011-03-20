@@ -203,17 +203,19 @@ class CodeWriter
         push()
 	end
 
+	#location in memory
     def locInMem(segmentVar)
         @file.write("@" + segmentVar + "\n")
         @file.write("D=M\n")
 	end
 
+	#place in memory
     def plMemory(memoryLoc)
         @file.write("@" + memoryLoc.to_s + "\n")
         @file.write("D=A\n")
 	end
 
-	#store 
+	#store memory
     def storeRAM(index)
         @file.write("@13\n") 
         @file.write("M=D\n")
@@ -230,6 +232,7 @@ class CodeWriter
         @file.write("M=D\n")
     end
 
+	#jump procedure
     def glJump(jumpCmd)
 		puts jumpCmd
         neg = "negate" + @counter.to_s
@@ -253,6 +256,74 @@ class CodeWriter
         @file.write("M=!D\n")
 	end
 
+	#return procedure
+	def writeRet()
+        @file.write("@LCL\n")
+        @file.write("D=M\n")
+        @file.write("@R13\n")
+        @file.write("M=D\n")
+        @file.write("@R14\n") 
+        @file.write("M=D\n")
+        @file.write("@5\n")
+        @file.write("D=A\n")
+        @file.write("@R14\n")
+        @file.write("M=M-D\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@R14\n")
+        @file.write("M=D\n")
+        pop()
+        @file.write("@ARG\n")
+        @file.write("A=M\n")
+        @file.write("M=D\n")
+        @file.write("@ARG\n")
+        @file.write("D=M\n")
+        @file.write("@SP\n")
+        @file.write("M=D+1\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@THAT\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@THIS\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@ARG\n")
+        @file.write("M=D\n")
+        @file.write("@R13\n")
+        @file.write("M=M-1\n")
+        @file.write("A=M\n")
+        @file.write("D=M\n")
+        @file.write("@LCL\n")
+        @file.write("M=D\n")
+        @file.write("@R14\n")
+        @file.write("A=M\n")
+        @file.write("0;JMP\n")
+	end
+
+	#write function calls
+	def writeFunc(func, lcl)
+        @currentFunc = func
+        @retNum = 0
+        @file.write("(" + func + ")\n")
+		i = 0
+		while (i <= lcl.to_i)
+            @file.write("@SP\n")
+            @file.write("A=M\n")
+            @file.write("M=0\n")
+            @file.write("@SP\n")
+            @file.write("M=M+1\n")
+			i = i + 1
+		end
+	end
 	#close output file
 	def close
 		@file.close()
@@ -370,7 +441,6 @@ class Translate
 
 		#generate a code writer
 		@code = CodeWriter.new(@output)
-		#@code.wIn()
 
 		#begin the processing
 		@files.each { |file| process_filenames(file) }
@@ -436,9 +506,9 @@ class Translate
 			elsif parser.commandType() == $CALL
 				#@code.writeCall(parser.arg1(), parser.arg2())
 			elsif parser.commandType() == $RETURN
-				#@code.writeRet()
+				@code.writeRet()
 			elsif parser.commandType() == $FUNCTION
-				#@code.writeFunc(parser.arg1, parser.arg2)
+				@code.writeFunc(parser.arg1, parser.arg2)
 			else 
 				raise "Command error"
 			end
