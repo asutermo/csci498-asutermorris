@@ -28,7 +28,7 @@ class CodeWriter
 		#all file checking has been done in Translate, open it
 		@file = File.open(filepath, 'w')
 		@counter = 0
-		@currentFunc = ""
+		@currentFunc = " "
 		@retNum = 0
 	end
 
@@ -92,6 +92,7 @@ class CodeWriter
 	#write push or pop assembly code
 	def writePushPop(command, seg, index)
 		seg.rstrip!
+		seg.gsub!(/\d/, '')
 		if command == $PUSH
             if seg == "constant" 
                 @file.write("@" + index.to_s + "\n")
@@ -120,7 +121,7 @@ class CodeWriter
                 @file.write("D=M\n")
                 push()
             else
-                print("ERROR: seg undefined, seg given - " + seg)
+                puts("ERROR: seg undefined, seg given - " + seg)
 			end
         elsif command == $POP
             if seg == "argument"
@@ -142,11 +143,12 @@ class CodeWriter
                 plMemory("3")
                 storeRAM(index)
             elsif seg == "static"
+				puts "encounter static " + @currentName + " " + index.to_s
                 pop()
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
                 @file.write("M=D\n")
             else
-                print("ERROR: seg undefined, seg given - " + seg)
+                puts("ERROR: seg undefined, seg given - " + seg)
 			end
 		end
 	end
@@ -234,7 +236,6 @@ class CodeWriter
 
 	#jump procedure
     def glJump(jumpCmd)
-		puts jumpCmd
         neg = "negate" + @counter.to_s
         setTru = "setTrue" + @counter.to_s
         @counter += 1
@@ -315,7 +316,7 @@ class CodeWriter
         @retNum = 0
         @file.write("(" + func + ")\n")
 		i = 0
-		while (i <= lcl.to_i)
+		while (i < lcl.to_i)
             @file.write("@SP\n")
             @file.write("A=M\n")
             @file.write("M=0\n")
@@ -323,6 +324,53 @@ class CodeWriter
             @file.write("M=M+1\n")
 			i = i + 1
 		end
+	end
+
+	def writeInit()
+        @file.write("@256\n")
+        @file.write("D=A\n")
+        @file.write("@SP\n")  
+        @file.write("M=D\n")
+		@currentFunc = "Sys.init"
+        writeCall("Sys.init", 0)
+	end
+
+	def writeCall(functionName, numArgs)
+        @file.write("@return" + @currentFunc + @retNum.to_s + "\n")
+        @file.write("D=A\n")
+        push()
+        @file.write("@LCL\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@ARG\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@THIS\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@THAT\n")
+        @file.write("D=M\n")
+        push()
+        @file.write("@SP\n")
+        @file.write("D=M\n")
+        @file.write("@ARG\n")
+        @file.write("M=D\n")
+        @file.write("@" + numArgs.to_s + "\n")
+        @file.write("D=A\n")
+        @file.write("@ARG\n")
+        @file.write("M=M-D\n")
+        @file.write("@5\n")
+        @file.write("D=A\n")
+        @file.write("@ARG\n")
+        @file.write("M=M-D\n")
+        @file.write("@SP\n")
+        @file.write("D=M\n")
+        @file.write("@LCL\n")
+        @file.write("M=D\n")
+        @file.write("@" + functionName + "\n")
+        @file.write("0;JMP\n")
+        @file.write("(return" + @currentFunc + @retNum.to_s + ")\n")
+        @retNum += 1
 	end
 	#close output file
 	def close
@@ -345,11 +393,13 @@ class Parser
 				next
 			end
 			@stripped.gsub!(/\/\/.*/, '')
+			@stripped.rstrip!()
 			if !(@stripped.length == 0)
 				@commands << @stripped
 			else
 				next
 			end
+			puts "Reading in " + @stripped
 		end
 		@counter = -1
 	end
@@ -424,7 +474,7 @@ class Parser
         return result
 	end
 
-	#self explanatory
+	# explanatory
 	def close
 		@file.close()
 	end
@@ -441,7 +491,7 @@ class Translate
 
 		#generate a code writer
 		@code = CodeWriter.new(@output)
-
+		@code.writeInit()
 		#begin the processing
 		@files.each { |file| process_filenames(file) }
 
@@ -459,8 +509,7 @@ class Translate
 			#if we have no files, there's nothing we can do, EXCEPTION
 			if (@files.length == 0)
 				raise  StandardError, "No files to open"
-			end 
-			puts @files
+			end
 			name = File.basename(dirname)
 			@output = dirname + "/" + name + ".asm"
 		elsif File.file?(path)
@@ -489,10 +538,10 @@ class Translate
 		parser = Parser.new(path)
 		fname = File.basename(path)
 		@code.setFileName(fname)
-
 		#while we have more commands, advance and check command types
 		while parser.hasMoreCommands
 			parser.advance
+			puts "Command is " + parser.current() + " type is " + parser.commandType.to_s
 			if parser.commandType == $ARITHMETIC
 				@code.writeArithmetic(parser.arg1())
 			elsif parser.commandType == $PUSH || parser.commandType == $POP
@@ -504,13 +553,14 @@ class Translate
 			elsif parser.commandType == $IF
 				@code.writeIf(parser.arg1())
 			elsif parser.commandType() == $CALL
-				#@code.writeCall(parser.arg1(), parser.arg2())
+				@code.writeCall(parser.arg1(), parser.arg2())
 			elsif parser.commandType() == $RETURN
 				@code.writeRet()
 			elsif parser.commandType() == $FUNCTION
 				@code.writeFunc(parser.arg1, parser.arg2)
 			else 
-				raise "Command error"
+				puts parser.commandType()
+				raise "Command error, invalid command" + parser.commandType.to_s
 			end
 		end
 
@@ -525,5 +575,6 @@ begin
 	trans = Translate.new(path)
 rescue Exception => e
 	puts "Error you suck!"
+	puts e
 	puts e.backtrace
 end
