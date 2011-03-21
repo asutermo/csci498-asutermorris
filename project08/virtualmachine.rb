@@ -41,30 +41,35 @@ class CodeWriter
 	def writeArithmetic(command)
 		if command == "add"
             pop()
+			@file.write("//writing addition\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("M=M+D\n")
         elsif command == "sub"
             pop()
+			@file.write("//writting subtraction\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("M=M-D\n") 
         elsif command == "neg"
+			@file.write("//negating\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("M=-M\n")
         elsif command == "and"
             pop()
+			@file.write("//writing and\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("M=M & D\n")
         elsif command == "or"
             pop()
+			@file.write("//writing or\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("M=M | D\n")
         elsif command == "not"
-            pop()
+			@file.write("//writing not\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("M=!M\n")
@@ -72,6 +77,7 @@ class CodeWriter
             label = "negate" + @counter.to_s
 			@counter += 1
             pop()
+			@file.write("//eq\n")
             @file.write("@SP\n")
             @file.write("A=M-1\n")
             @file.write("D=M-D\n")
@@ -117,6 +123,7 @@ class CodeWriter
                 plMemory("3")
                 pfRAM(index)
             elsif seg == "static"
+				@file.write("//push static\n")
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
                 @file.write("D=M\n")
                 push()
@@ -145,6 +152,7 @@ class CodeWriter
             elsif seg == "static"
 				puts "encounter static " + @currentName + " " + index.to_s
                 pop()
+				@file.write("//pop static\n")
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
                 @file.write("M=D\n")
             else
@@ -160,12 +168,14 @@ class CodeWriter
 
 	#print label
 	def writeLbl(command)
+		@file.write("//writing label\n")
 		command.rstrip!
 		@file.write("("+lblName(command)+")\n")
 	end
 
 	#write goto statement
 	def writeGo(command)
+		@file.write("//writing goto\n")
 		command.rstrip!
 		@file.write("@"+lblName(command)+"\n")
 		@file.write("0;JMP\n")
@@ -176,12 +186,14 @@ class CodeWriter
 		command.rstrip!
 		puts command
 		pop()
+		@file.write("//writing if-goto\n")
 		@file.write("@"+lblName(command)+"\n")
 		@file.write("D;JNE\n")
 	end
 
 	#push the stack
 	def push()
+		@file.write("//pushing\n")
         @file.write("@SP\n")
         @file.write("A=M\n")
         @file.write("M=D\n")
@@ -191,6 +203,7 @@ class CodeWriter
 
     #pop the stack
     def pop()
+		@file.write("//popping\n")
         @file.write("@SP\n")
         @file.write("M=M-1\n")
         @file.write("A=M\n")
@@ -199,6 +212,7 @@ class CodeWriter
 
 	#push from ram
     def pfRAM(index)
+		@file.write("//pushing from ram\n")
         @file.write("@" + index + "\n")
         @file.write("A=D+A\n")
         @file.write("D=M\n")
@@ -207,18 +221,21 @@ class CodeWriter
 
 	#location in memory
     def locInMem(segmentVar)
+		@file.write("//location in memory\n")
         @file.write("@" + segmentVar + "\n")
         @file.write("D=M\n")
 	end
 
 	#place in memory
     def plMemory(memoryLoc)
+		@file.write("//place in memory\n")
         @file.write("@" + memoryLoc.to_s + "\n")
         @file.write("D=A\n")
 	end
 
 	#store memory
     def storeRAM(index)
+		@file.write("//store in RAM\n")
         @file.write("@13\n") 
         @file.write("M=D\n")
         @file.write("@" + index + "\n")
@@ -259,6 +276,7 @@ class CodeWriter
 
 	#return procedure
 	def writeRet()
+		@file.write("//write return\n")
         @file.write("@LCL\n")
         @file.write("D=M\n")
         @file.write("@R13\n")
@@ -312,6 +330,7 @@ class CodeWriter
 
 	#write function calls
 	def writeFunc(func, lcl)
+		@file.write("//writing function\n")
         @currentFunc = func
         @retNum = 0
         @file.write("(" + func + ")\n")
@@ -327,6 +346,7 @@ class CodeWriter
 	end
 
 	def writeInit()
+		@file.write("//initalizing\n")
         @file.write("@256\n")
         @file.write("D=A\n")
         @file.write("@SP\n")  
@@ -336,6 +356,7 @@ class CodeWriter
 	end
 
 	def writeCall(functionName, numArgs)
+		@file.write("//writing call\n")
         @file.write("@return" + @currentFunc + @retNum.to_s + "\n")
         @file.write("D=A\n")
         push()

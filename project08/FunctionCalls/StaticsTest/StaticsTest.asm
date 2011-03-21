@@ -1,9 +1,12 @@
+//initalizing
 @256
 D=A
 @SP
 M=D
+//writing call
 @returnSys.init0
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -11,6 +14,7 @@ M=D
 M=M+1
 @LCL
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -18,6 +22,7 @@ M=D
 M=M+1
 @ARG
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -25,6 +30,7 @@ M=D
 M=M+1
 @THIS
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -32,6 +38,7 @@ M=D
 M=M+1
 @THAT
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -56,6 +63,7 @@ M=D
 @Sys.init
 0;JMP
 (returnSys.init0)
+//writing function
 (Class1.set)
 @SP
 A=M
@@ -107,45 +115,57 @@ A=M
 M=0
 @SP
 M=M+1
+//location in memory
 @ARG
 D=M
+//pushing from ram
 @0
 A=D+A
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//popping
 @SP
 M=M-1
 A=M
 D=M
+//pop static
 @Class1.vm.0
 M=D
+//location in memory
 @ARG
 D=M
+//pushing from ram
 @1
 A=D+A
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//popping
 @SP
 M=M-1
 A=M
 D=M
+//pop static
 @Class1.vm.1
 M=D
 @0
 D=A
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//write return
 @LCL
 D=M
 @R13
@@ -160,6 +180,7 @@ A=M
 D=M
 @R14
 M=D
+//popping
 @SP
 M=M-1
 A=M
@@ -198,6 +219,7 @@ M=D
 @R14
 A=M
 0;JMP
+//writing function
 (Class1.get)
 @SP
 A=M
@@ -249,27 +271,34 @@ A=M
 M=0
 @SP
 M=M+1
+//push static
 @Class1.vm.0
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//push static
 @Class1.vm.1
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//popping
 @SP
 M=M-1
 A=M
 D=M
+//writting subtraction
 @SP
 A=M-1
 M=M-D
+//write return
 @LCL
 D=M
 @R13
@@ -284,6 +313,7 @@ A=M
 D=M
 @R14
 M=D
+//popping
 @SP
 M=M-1
 A=M
@@ -322,6 +352,7 @@ M=D
 @R14
 A=M
 0;JMP
+//writing function
 (Class2.set)
 @SP
 A=M
@@ -423,45 +454,57 @@ A=M
 M=0
 @SP
 M=M+1
+//location in memory
 @ARG
 D=M
+//pushing from ram
 @0
 A=D+A
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//popping
 @SP
 M=M-1
 A=M
 D=M
+//pop static
 @Class2.vm.0
 M=D
+//location in memory
 @ARG
 D=M
+//pushing from ram
 @1
 A=D+A
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//popping
 @SP
 M=M-1
 A=M
 D=M
+//pop static
 @Class2.vm.1
 M=D
 @0
 D=A
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//write return
 @LCL
 D=M
 @R13
@@ -476,6 +519,7 @@ A=M
 D=M
 @R14
 M=D
+//popping
 @SP
 M=M-1
 A=M
@@ -514,6 +558,7 @@ M=D
 @R14
 A=M
 0;JMP
+//writing function
 (Class2.get)
 @SP
 A=M
@@ -615,27 +660,34 @@ A=M
 M=0
 @SP
 M=M+1
+//push static
 @Class2.vm.0
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//push static
 @Class2.vm.1
 D=M
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//popping
 @SP
 M=M-1
 A=M
 D=M
+//writting subtraction
 @SP
 A=M-1
 M=M-D
+//write return
 @LCL
 D=M
 @R13
@@ -650,6 +702,7 @@ A=M
 D=M
 @R14
 M=D
+//popping
 @SP
 M=M-1
 A=M
@@ -688,9 +741,11 @@ M=D
 @R14
 A=M
 0;JMP
+//writing function
 (Sys.init)
 @6
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -698,13 +753,16 @@ M=D
 M=M+1
 @8
 D=A
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//writing call
 @returnSys.init0
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -712,6 +770,7 @@ M=D
 M=M+1
 @LCL
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -719,6 +778,7 @@ M=D
 M=M+1
 @ARG
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -726,6 +786,7 @@ M=D
 M=M+1
 @THIS
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -733,6 +794,7 @@ M=D
 M=M+1
 @THAT
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -757,8 +819,10 @@ M=D
 @Class1.set
 0;JMP
 (returnSys.init0)
+//place in memory
 @5
 D=A
+//store in RAM
 @13
 M=D
 @0
@@ -774,6 +838,7 @@ A=M
 M=D
 @23
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -781,13 +846,16 @@ M=D
 M=M+1
 @15
 D=A
+//pushing
 @SP
 A=M
 M=D
 @SP
 M=M+1
+//writing call
 @returnSys.init1
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -795,6 +863,7 @@ M=D
 M=M+1
 @LCL
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -802,6 +871,7 @@ M=D
 M=M+1
 @ARG
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -809,6 +879,7 @@ M=D
 M=M+1
 @THIS
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -816,6 +887,7 @@ M=D
 M=M+1
 @THAT
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -840,8 +912,10 @@ M=D
 @Class2.set
 0;JMP
 (returnSys.init1)
+//place in memory
 @5
 D=A
+//store in RAM
 @13
 M=D
 @0
@@ -855,8 +929,10 @@ D=M
 @13
 A=M
 M=D
+//writing call
 @returnSys.init2
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -864,6 +940,7 @@ M=D
 M=M+1
 @LCL
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -871,6 +948,7 @@ M=D
 M=M+1
 @ARG
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -878,6 +956,7 @@ M=D
 M=M+1
 @THIS
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -885,6 +964,7 @@ M=D
 M=M+1
 @THAT
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -909,8 +989,10 @@ M=D
 @Class1.get
 0;JMP
 (returnSys.init2)
+//writing call
 @returnSys.init3
 D=A
+//pushing
 @SP
 A=M
 M=D
@@ -918,6 +1000,7 @@ M=D
 M=M+1
 @LCL
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -925,6 +1008,7 @@ M=D
 M=M+1
 @ARG
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -932,6 +1016,7 @@ M=D
 M=M+1
 @THIS
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -939,6 +1024,7 @@ M=D
 M=M+1
 @THAT
 D=M
+//pushing
 @SP
 A=M
 M=D
@@ -963,6 +1049,8 @@ M=D
 @Class2.get
 0;JMP
 (returnSys.init3)
+//writing label
 ($WHILE)
+//writing goto
 @$WHILE
 0;JMP

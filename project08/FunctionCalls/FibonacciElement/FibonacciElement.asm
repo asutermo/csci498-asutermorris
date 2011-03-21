@@ -186,6 +186,7 @@ M=M+1
 M=M-1
 A=M
 D=M
+//writting subtraction
 @SP
 A=M-1
 M=M-D
@@ -264,6 +265,7 @@ M=M+1
 M=M-1
 A=M
 D=M
+//writting subtraction
 @SP
 A=M-1
 M=M-D
@@ -325,6 +327,7 @@ M=D
 M=M-1
 A=M
 D=M
+//writing addition
 @SP
 A=M-1
 M=M+D
