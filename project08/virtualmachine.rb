@@ -279,8 +279,10 @@ class CodeWriter
 		@file.write("//write return\n")
         @file.write("@LCL\n")
         @file.write("D=M\n")
+		#frame
         @file.write("@R13\n")
         @file.write("M=D\n")
+		#return
         @file.write("@R14\n") 
         @file.write("M=D\n")
         @file.write("@5\n")
