@@ -1,0 +1,17 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/09/Square/Main.jack
+
+/**
+ * The Main class initializes a new hello world.
+ */
+class Main {
+
+    /** Initializes a new game and starts it. */    
+    function void main() {
+      	do Output.printString("Finally getting this stupid thing to work");
+
+        return;
+    }
+}
