@@ -4,7 +4,7 @@ D=A
 @SP
 M=D
 //writing call
-@returnSys.init0
+@Sys.init0
 D=A
 //pushing
 @SP
@@ -760,7 +760,7 @@ M=D
 @SP
 M=M+1
 //writing call
-@returnSys.init0
+@Sys.init0
 D=A
 //pushing
 @SP
@@ -853,7 +853,7 @@ M=D
 @SP
 M=M+1
 //writing call
-@returnSys.init1
+@Sys.init1
 D=A
 //pushing
 @SP
@@ -930,7 +930,7 @@ D=M
 A=M
 M=D
 //writing call
-@returnSys.init2
+@Sys.init2
 D=A
 //pushing
 @SP
@@ -990,7 +990,7 @@ M=D
 0;JMP
 (returnSys.init2)
 //writing call
-@returnSys.init3
+@Sys.init3
 D=A
 //pushing
 @SP

@@ -125,6 +125,7 @@ class CodeWriter
             elsif seg == "static"
 				@file.write("//push static\n")
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
+				puts @currentName + "." + index.to_s
                 @file.write("D=M\n")
                 push()
             else
@@ -150,10 +151,10 @@ class CodeWriter
                 plMemory("3")
                 storeRAM(index)
             elsif seg == "static"
-				puts "encounter static " + @currentName + " " + index.to_s
                 pop()
 				@file.write("//pop static\n")
                 @file.write("@" + @currentName + "." + index.to_s + "\n")
+				puts @currentName + "." + index.to_s
                 @file.write("M=D\n")
             else
                 puts("ERROR: seg undefined, seg given - " + seg)
@@ -359,7 +360,8 @@ class CodeWriter
 
 	def writeCall(functionName, numArgs)
 		@file.write("//writing call\n")
-        @file.write("@return" + @currentFunc + @retNum.to_s + "\n")
+        #@file.write("@return" + @currentFunc + @retNum.to_s + "\n")
+		@file.write("@" + @currentFunc+@retNum.to_s + "\n")
         @file.write("D=A\n")
         push()
         @file.write("@LCL\n")
