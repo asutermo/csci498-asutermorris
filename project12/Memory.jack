@@ -51,8 +51,7 @@ class Memory {
 		let curr = free;
 		
 		while (~(curr[len] > size)) {
-			if (~(curr[nex] = null))
-			{
+			if (~(curr[nex] = null)) {
 				let previous = curr;
 				let curr = curr[nex];
 			}
