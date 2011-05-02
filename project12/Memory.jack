@@ -8,8 +8,21 @@
  */ 
 class Memory {
 
+	static int len;
+	static int nex;
+	static Array free;
     /** Initializes memory parameters. */
     function void init() {
+		var Array next;
+		let len = 0;
+		let nex = 1;
+		let free = 2048;
+		Let free[len] = 2;
+		let free[nex] = 2050;
+		let next = free[nex];
+		let next[len] = 16382;
+		let next[nex] = null;
+		return;
     }
 
     /** Returns the value of the main memory at this address. */
