@@ -18,7 +18,7 @@ class Memory {
 		let len = 0;
 		let nex = 1;
 		let free = 2048;
-		Let free[len] = 2;
+		let free[len] = 2;
 		let free[nex] = 2050;
 		let next = free[nex];
 		let next[len] = 16382;
@@ -51,7 +51,7 @@ class Memory {
 		let curr = free;
 		
 		while (~(curr[len] > size)) {
-			if (~(curr[nex] = null)
+			if (~(curr[nex] = null))
 			{
 				let previous = curr;
 				let curr = curr[nex];
@@ -75,10 +75,10 @@ class Memory {
 		var Array node_element;
 		
 		let deallocate = (object - 1);
-		let deallocate[next] = null;
+		let deallocate[nex] = null;
 		let node_element = free;
 		
-		while (~(node[nex] = null)) {
+		while (~(node_element[nex] = null)) {
 			let node_element = node_element[nex];
 		}
 		
